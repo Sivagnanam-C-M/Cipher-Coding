@@ -147,15 +147,6 @@ export function CodeViewer({
           <span className="text-slate-300 font-semibold">{filename}</span>
           <span className="text-slate-600">[{language}]</span>
         </div>
-
-        <div className="flex items-center space-x-2">
-          <span className="text-[10px] px-2 py-0.5 rounded bg-red-500/10 border border-red-500/30 text-red-400 font-bold uppercase tracking-wider">
-            COPY PROTECTED
-          </span>
-          <span className="text-[11px] text-slate-500 font-mono tracking-wider uppercase hidden sm:inline">
-            MENTAL LOGIC TRACE
-          </span>
-        </div>
       </div>
 
       {/* Code Lines Display (Strictly Read-Only & Non-Selectable) */}
