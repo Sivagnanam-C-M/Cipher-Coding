@@ -3,8 +3,16 @@
 /.pnp
 .pnp.js
 
-# Testing
+# Testing & QA Suites (kept strictly local)
 /coverage
+/tests/
+tests/
+*.test.*
+*.spec.*
+src/scripts/*test*
+src/scripts/test-*
+src/scripts/*-test-*
+src/scripts/verify-security-and-rules.ts
 
 # Next.js
 /.next/
