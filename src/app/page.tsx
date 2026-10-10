@@ -1,243 +1,212 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import {
   ShieldAlert,
   Terminal,
-  Clock,
-  UserCheck,
-  ChevronRight,
-  Code2,
+  LogIn,
+  UserPlus,
   Lock,
+  ChevronRight,
+  FileText,
+  Trophy,
   Cpu,
-  HelpCircle,
-  Target,
-  Zap,
-  Radio,
+  CheckCircle2,
+  AlertTriangle,
 } from 'lucide-react';
 import TerminalCard from '@/components/ui/TerminalCard';
 import CyberButton from '@/components/ui/CyberButton';
 import Badge from '@/components/ui/Badge';
 import { getParticipantSession, getAdminSession } from '@/lib/auth/session';
 
-export default async function LandingPage() {
+export const metadata = {
+  title: 'Operative Access Gateway | Cipher Coding: Operation Zero Day',
+  description: 'Identity verification required. Register or authenticate to enter Operation Zero Day.',
+};
+
+export default async function AccessGatewayPage() {
   const [partSession, adminSession] = await Promise.all([
     getParticipantSession(),
     getAdminSession(),
   ]);
-  return (
-    <div className="relative overflow-hidden py-12 md:py-20 font-mono">
-      {/* Background Ambience */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none -z-10" />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-        {/* Mission Briefing Hero Banner */}
-        <div className="text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs tracking-widest uppercase">
-            <span className="w-2 h-2 rounded-full bg-red-400 animate-ping inline-block" />
-            CRITICAL INCIDENT // BREACH DETECTED
+  // If already authenticated, forward directly to mission or admin console
+  if (partSession) {
+    redirect('/mission');
+  }
+  if (adminSession) {
+    redirect('/admin');
+  }
+
+  return (
+    <div className="relative overflow-hidden py-10 md:py-16 font-mono">
+      {/* Dynamic Background Gradients */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-cyan-500/10 blur-[130px] rounded-full pointer-events-none -z-10" />
+      <div className="absolute top-1/2 left-1/3 -translate-x-1/2 w-[400px] h-[250px] bg-red-500/10 blur-[120px] rounded-full pointer-events-none -z-10" />
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        {/* Gateway Header */}
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs tracking-widest uppercase">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse inline-block" />
+            SECURE TERMINAL GATEWAY // IDENTITY VERIFICATION REQUIRED
           </div>
 
-          <div className="space-y-2">
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white uppercase terminal-glow-cyan">
+          <div className="space-y-1">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white uppercase terminal-glow-cyan">
               OPERATION ZERO DAY
             </h1>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-widest text-cyan-400 uppercase">
-              GRID INCIDENT BRIEFING // EYES ONLY
-            </h2>
+            <p className="text-sm sm:text-base font-bold text-slate-400 tracking-wider">
+              AUTHORIZATION LEVEL: RESTRICTED // PLEASE VERIFY IDENTITY
+            </p>
           </div>
 
-          {/* Incident Alert Card */}
-          <div className="max-w-2xl mx-auto p-4 rounded-lg bg-red-950/40 border border-red-500/50 shadow-crimson-glow text-center space-y-2">
-            <span className="text-base sm:text-lg font-black text-red-400 tracking-widest uppercase block animate-pulse">
-              ⚠️ A BREACH HAS BEEN DETECTED ACROSS THE GRID.
-            </span>
-            <div className="text-xs sm:text-sm text-slate-200 font-sans leading-relaxed space-y-1">
-              <p>A classified file has been accessed. The intruder has disappeared. His identity remains unknown.</p>
-              <p className="text-slate-300 font-medium">Before vanishing, he left behind a trail of fragments hidden inside programs.</p>
-            </div>
-          </div>
+          <p className="max-w-xl mx-auto text-xs sm:text-sm text-slate-300 font-sans leading-relaxed">
+            All operatives must authenticate with an assigned Callsign or initialize registration before accessing the forensic challenge console.
+          </p>
+        </div>
 
-          {/* Orders Directives */}
-          <div className="max-w-2xl mx-auto space-y-2">
-            <div className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-widest text-center">
-              YOUR ORDERS ARE SIMPLE:
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-              <div className="p-3.5 rounded bg-[#06090e] border border-red-500/40 flex items-center space-x-3">
-                <div className="p-2 rounded bg-red-500/10 text-red-400 shrink-0">
-                  <Target className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-[10px] text-red-400 font-bold uppercase tracking-widest">ORDER 01</div>
-                  <div className="text-sm sm:text-base font-extrabold text-white tracking-wider">TRACE THE INTRUDER.</div>
-                </div>
+        {/* Dual Primary Action Gateway Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* OPTION 1: Registration Card */}
+          <TerminalCard
+            title="NEW OPERATIVE // REGISTRATION"
+            subtitle="PROTOCOL: NEW_CALLSIGN"
+            glowColor="cyan"
+            statusBadge={<Badge variant="cyan">INITIALIZE</Badge>}
+            className="flex flex-col justify-between border-cyan-500/40 hover:border-cyan-400 transition-all duration-300"
+          >
+            <div className="space-y-4">
+              <div className="p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/20 w-fit text-cyan-400">
+                <UserPlus className="w-7 h-7" />
               </div>
 
-              <div className="p-3.5 rounded bg-[#06090e] border border-cyan-500/40 flex items-center space-x-3">
-                <div className="p-2 rounded bg-cyan-500/10 text-cyan-400 shrink-0">
-                  <Zap className="w-5 h-5" />
+              <div>
+                <h3 className="text-lg font-bold text-white tracking-wide">
+                  New Operative Registration
+                </h3>
+                <p className="text-xs text-slate-400 mt-1.5 font-sans leading-relaxed">
+                  First time joining Operation Zero Day? Register with your email and college credentials to obtain your unique cryptographic callsign (e.g. <span className="text-cyan-300 font-mono font-bold">CYB-7A42</span>).
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-slate-800 text-[11px] text-slate-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <span>Instant unique Callsign allocation</span>
                 </div>
-                <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase tracking-widest">ORDER 02</div>
-                  <div className="text-sm sm:text-base font-extrabold text-white tracking-wider">RECOVER THE STOLEN FILE.</div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <span>Language preference selection (Python/Java/C/C++)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                  <span>Takes less than 30 seconds</span>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Mystery questions & Investigation note */}
-          <div className="max-w-2xl mx-auto p-4 rounded-lg bg-[#06090e]/90 border border-slate-800 space-y-2.5 text-center">
-            <p className="text-xs sm:text-sm text-slate-300 font-sans">
-              Every fragment you recover will reveal another piece of the investigation.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs sm:text-sm font-mono font-bold text-amber-400 tracking-wide">
-              <span>Who is he?</span>
-              <span className="text-slate-600">•</span>
-              <span>What did he take?</span>
-              <span className="text-slate-600">•</span>
-              <span>And why did he leave the trail behind?</span>
+            <div className="pt-6">
+              <Link href="/register" className="block w-full">
+                <CyberButton
+                  variant="cyan"
+                  size="lg"
+                  className="w-full justify-center tracking-wider font-bold shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+                  icon={<ChevronRight className="w-4 h-4" />}
+                >
+                  INITIALIZE REGISTRATION →
+                </CyberButton>
+              </Link>
             </div>
-          </div>
+          </TerminalCard>
 
-          {/* Protocol Flow & Time Callout */}
-          <div className="max-w-2xl mx-auto p-4 rounded-lg bg-[#06090e] border border-cyan-500/30 space-y-2.5 text-center">
-            <div className="text-xs sm:text-sm font-black font-mono text-cyan-300 uppercase tracking-widest">
-              READ → TRACE → DECODE → CONNECT
-            </div>
-            <p className="text-xs text-slate-400 font-sans">
-              Choose your language.
-            </p>
-            <div className="pt-1 flex items-center justify-center gap-3 font-mono">
-              <span className="px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold tracking-wider">
-                40 MINUTES.
-              </span>
-              <span className="text-red-400 text-xs sm:text-sm font-black uppercase tracking-wider animate-pulse">
-                THE INVESTIGATION BEGINS NOW.
-              </span>
-            </div>
-          </div>
+          {/* OPTION 2: Login Card */}
+          <TerminalCard
+            title="RETURNING AGENT // AUTHENTICATION"
+            subtitle="PROTOCOL: MISSION_LOGIN"
+            glowColor="emerald"
+            statusBadge={<Badge variant="emerald">ACTIVE ACCESS</Badge>}
+            className="flex flex-col justify-between border-emerald-500/40 hover:border-emerald-400 transition-all duration-300"
+          >
+            <div className="space-y-4">
+              <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 w-fit text-emerald-400">
+                <LogIn className="w-7 h-7" />
+              </div>
 
-          {/* Call to Actions */}
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            {partSession ? (
-              <Link href="/mission">
+              <div>
+                <h3 className="text-lg font-bold text-white tracking-wide">
+                  Operative Access Login
+                </h3>
+                <p className="text-xs text-slate-400 mt-1.5 font-sans leading-relaxed">
+                  Already registered for the mission? Sign in with your assigned <span className="text-emerald-300 font-mono font-bold">Participant ID</span> or <span className="text-emerald-300 font-mono font-bold">Email</span> and password to launch your mission terminal.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-2 border-t border-slate-800 text-[11px] text-slate-300">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Resume active mission countdown</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Preserve current solve progress and telemetry</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Encrypted HTTP-only session restoration</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-6">
+              <Link href="/login" className="block w-full">
                 <CyberButton
                   variant="emerald"
                   size="lg"
-                  className="shadow-[0_0_25px_rgba(16,185,129,0.4)] px-8 font-black tracking-wider"
-                  icon={<ChevronRight className="w-5 h-5" />}
+                  className="w-full justify-center tracking-wider font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                  icon={<Terminal className="w-4 h-4" />}
                 >
-                  CONTINUE INVESTIGATION // ENTER TERMINAL →
+                  ACCESS MISSION TERMINAL →
                 </CyberButton>
               </Link>
-            ) : adminSession ? (
-              <Link href="/admin">
-                <CyberButton
-                  variant="amber"
-                  size="lg"
-                  className="shadow-[0_0_25px_rgba(245,158,11,0.4)] px-8 font-black tracking-wider"
-                  icon={<ChevronRight className="w-5 h-5" />}
-                >
-                  ENTER COMMAND TOWER // ADMIN CONSOLE →
-                </CyberButton>
-              </Link>
-            ) : (
-              <>
-                <Link href="/register">
-                  <CyberButton
-                    variant="cyan"
-                    size="lg"
-                    icon={<ChevronRight className="w-4 h-4" />}
-                  >
-                    INITIALIZE AGENT REGISTRATION
-                  </CyberButton>
-                </Link>
-                <Link href="/login">
-                  <CyberButton variant="secondary" size="lg">
-                    OPERATIVE ACCESS LOGIN
-                  </CyberButton>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Operational Intelligence Parameters */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <TerminalCard title="FORMAT" glowColor="cyan">
-            <div className="flex items-start space-x-3">
-              <UserCheck className="w-6 h-6 text-cyan-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-sm font-semibold text-white">INDIVIDUAL AGENT</h4>
-                <p className="text-xs text-slate-400 mt-1">
-                  Single operative deployment. 100–200 agents competing simultaneously on live telemetry.
-                </p>
-              </div>
-            </div>
-          </TerminalCard>
-
-          <TerminalCard title="TIMEFRAME" glowColor="amber">
-            <div className="flex items-start space-x-3">
-              <Clock className="w-6 h-6 text-amber-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-sm font-semibold text-white">30 – 45 MINUTES</h4>
-                <p className="text-xs text-slate-400 mt-1">
-                  Strict server-authoritative countdown. Submissions permanently terminate upon deadline.
-                </p>
-              </div>
-            </div>
-          </TerminalCard>
-
-          <TerminalCard title="EVIDENCE" glowColor="emerald">
-            <div className="flex items-start space-x-3">
-              <Code2 className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-sm font-semibold text-white">CODE INVESTIGATION</h4>
-                <p className="text-xs text-slate-400 mt-1">
-                  You do not write programs. You trace logic, deconstruct algorithms, and recover tokens.
-                </p>
-              </div>
             </div>
           </TerminalCard>
         </div>
 
-        {/* Rules of Engagement */}
-        <TerminalCard
-          title="RULES OF ENGAGEMENT // DIRECTIVES"
-          subtitle="REV 2026.04"
-          statusBadge={<Badge variant="amber">MANDATORY PROTOCOL</Badge>}
-        >
-          <div className="space-y-4 text-xs sm:text-sm text-slate-300">
-            <div className="flex items-start space-x-3">
-              <span className="text-cyan-400 font-bold">01.</span>
-              <p>
-                <strong className="text-slate-100">Zero Execution Environment:</strong> Operatives do not submit arbitrary code to run on the server. Your task is pure mental or scratchpad logic tracing.
-              </p>
+        {/* Secondary Navigation & Briefing Callout */}
+        <div className="p-4 rounded-lg bg-[#06090e]/90 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+          <div className="flex items-center space-x-3 text-slate-300">
+            <div className="p-2 rounded bg-amber-500/10 text-amber-400 shrink-0">
+              <FileText className="w-4 h-4" />
             </div>
-            <div className="flex items-start space-x-3">
-              <span className="text-cyan-400 font-bold">02.</span>
-              <p>
-                <strong className="text-slate-100">Server Clock Authority:</strong> Your countdown begins the instant you initialize your mission. Refreshing or tampering with client device clocks has zero effect.
-              </p>
-            </div>
-            <div className="flex items-start space-x-3">
-              <span className="text-cyan-400 font-bold">03.</span>
-              <p>
-                <strong className="text-slate-100">Audit Logging:</strong> Every attempt is permanently recorded in the forensic database. Scores prioritize accuracy, followed by lowest elapsed solve time in case of tie.
-              </p>
-            </div>
-            <div className="flex items-start space-x-3">
-              <span className="text-cyan-400 font-bold">04.</span>
-              <p>
-                <strong className="text-slate-100">Integrity:</strong> Evidence fragments are dynamically retrieved. Any attempt to inspect client bundles for answer keys will fail as solutions reside strictly behind encrypted server vaults.
-              </p>
+            <div>
+              <span className="font-bold text-white block">Need to review mission parameters?</span>
+              <span className="text-slate-400">Read the incident breach story, investigation rules, and time constraints.</span>
             </div>
           </div>
-        </TerminalCard>
+          <Link href="/briefing">
+            <CyberButton variant="secondary" size="sm" icon={<ChevronRight className="w-3.5 h-3.5" />}>
+              VIEW INCIDENT BRIEFING
+            </CyberButton>
+          </Link>
+        </div>
 
-        {/* Footer info */}
-        <div className="text-center text-xs text-slate-600 space-y-1">
-          <p>CIPHER CODING // OPERATION ZERO DAY</p>
-          <p>Next-Gen Cybersecurity Investigation Platform</p>
+        {/* Command Tower & Leaderboard Links */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800/80 text-xs text-slate-500">
+          <div className="flex items-center space-x-4">
+            <Link href="/leaderboard" className="flex items-center space-x-1.5 hover:text-cyan-400 transition-colors">
+              <Trophy className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Public Live Leaderboard</span>
+            </Link>
+            <span className="text-slate-700">•</span>
+            <Link href="/briefing" className="hover:text-slate-300 transition-colors">
+              Rules of Engagement
+            </Link>
+          </div>
+
+          <Link href="/admin/login" className="flex items-center space-x-1.5 text-amber-400/80 hover:text-amber-300 transition-colors">
+            <Lock className="w-3.5 h-3.5" />
+            <span>Command Staff Login →</span>
+          </Link>
         </div>
       </div>
     </div>

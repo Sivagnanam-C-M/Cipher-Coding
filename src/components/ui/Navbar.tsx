@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ShieldAlert, Terminal, Trophy, User, LogOut, Lock } from 'lucide-react';
+import { ShieldAlert, Terminal, Trophy, User, LogOut, Lock, FileText } from 'lucide-react';
 import CyberButton from './CyberButton';
 
 interface UserState {
@@ -155,6 +155,16 @@ export function Navbar() {
           >
             <Terminal className="w-4 h-4" />
             <span>Mission</span>
+          </Link>
+
+          <Link
+            href="/briefing"
+            className={`flex items-center space-x-1.5 transition-colors ${
+              pathname === '/briefing' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            <span>Briefing</span>
           </Link>
 
           <Link
