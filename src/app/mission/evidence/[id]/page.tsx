@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, useRef, useCallback, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -88,6 +88,16 @@ export default function EvidencePage({
   const [activeStoryReveal, setActiveStoryReveal] = useState<string>(cachedInitial?.storyReveal || '');
   const [nextQId, setNextQId] = useState<string | null>(cachedInitial?.nextQuestionId || null);
   const [nextQNum, setNextQNum] = useState<number | null>(cachedInitial?.nextQuestionNumber || null);
+  const [copyWarning, setCopyWarning] = useState(false);
+  const copyWarningTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const triggerCopyWarning = useCallback(() => {
+    setCopyWarning(true);
+    if (copyWarningTimerRef.current) clearTimeout(copyWarningTimerRef.current);
+    copyWarningTimerRef.current = setTimeout(() => {
+      setCopyWarning(false);
+    }, 2500);
+  }, []);
 
   // Sync initial language preference from localStorage or cache
   useEffect(() => {
@@ -215,19 +225,79 @@ export default function EvidencePage({
     fetchEvidence();
   }, [id]);
 
-  // Restrict copying of challenge and evidence code while preserving input field interactions
+  // Restrict Ctrl+C and copying of challenge code across the entire evidence examination view
   useEffect(() => {
-    const handleGlobalCopy = (e: ClipboardEvent) => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
       const activeEl = document.activeElement as HTMLElement | null;
-      if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
-        return; // Allow operative to copy/paste inside their answer box
+      const isInputField =
+        activeEl &&
+        (activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.isContentEditable);
+
+      if (isInputField) {
+        const inputEl = activeEl as HTMLInputElement | HTMLTextAreaElement;
+        const hasSelection =
+          typeof inputEl.selectionStart === 'number' &&
+          typeof inputEl.selectionEnd === 'number' &&
+          inputEl.selectionStart !== inputEl.selectionEnd;
+        if (hasSelection) return;
       }
-      e.preventDefault();
+
+      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+      const key = e.key.toLowerCase();
+      if (
+        isCtrlOrCmd &&
+        (key === 'c' ||
+          key === 'x' ||
+          key === 'a' ||
+          e.code === 'KeyC' ||
+          e.code === 'KeyX' ||
+          e.code === 'KeyA' ||
+          e.key === 'Insert')
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        triggerCopyWarning();
+      }
     };
 
-    window.addEventListener('copy', handleGlobalCopy);
-    return () => window.removeEventListener('copy', handleGlobalCopy);
-  }, []);
+    const handleGlobalCopy = (e: ClipboardEvent) => {
+      const activeEl = document.activeElement as HTMLElement | null;
+      const isInputField =
+        activeEl &&
+        (activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.isContentEditable);
+
+      if (isInputField) {
+        const inputEl = activeEl as HTMLInputElement | HTMLTextAreaElement;
+        const hasSelection =
+          typeof inputEl.selectionStart === 'number' &&
+          typeof inputEl.selectionEnd === 'number' &&
+          inputEl.selectionStart !== inputEl.selectionEnd;
+        if (hasSelection) return;
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.clipboardData) {
+        e.clipboardData.setData('text/plain', '');
+      }
+      triggerCopyWarning();
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown, true);
+    window.addEventListener('copy', handleGlobalCopy, true);
+    window.addEventListener('cut', handleGlobalCopy, true);
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown, true);
+      window.removeEventListener('copy', handleGlobalCopy, true);
+      window.removeEventListener('cut', handleGlobalCopy, true);
+      if (copyWarningTimerRef.current) clearTimeout(copyWarningTimerRef.current);
+    };
+  }, [triggerCopyWarning]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -326,6 +396,14 @@ export default function EvidencePage({
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-mono space-y-6">
+      {/* Security Toast: Ctrl+C Restriction Alert */}
+      {copyWarning && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-lg bg-red-950/95 border border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.6)] text-red-200 text-xs font-mono font-bold tracking-wider uppercase flex items-center space-x-2.5 animate-bounce backdrop-blur">
+          <ShieldAlert className="w-4 h-4 text-red-400 shrink-0" />
+          <span>SECURITY PROTOCOL: CTRL+C IS RESTRICTED // CODE CANNOT BE COPIED</span>
+        </div>
+      )}
+
       {/* Top Navigation & Status Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Link

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Terminal, ShieldAlert } from 'lucide-react';
 
 interface CodeViewerProps {
@@ -15,25 +15,99 @@ export function CodeViewer({
   filename = 'recovered_artifact.bin',
 }: CodeViewerProps) {
   const [warning, setWarning] = useState(false);
+  const warningTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const lines = code ? code.split('\n') : ['// No code captured'];
 
-  const triggerWarning = () => {
+  const triggerWarning = useCallback(() => {
     setWarning(true);
-    setTimeout(() => setWarning(false), 2500);
-  };
+    if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+    warningTimerRef.current = setTimeout(() => {
+      setWarning(false);
+    }, 2500);
+  }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Intercept Ctrl+C / Cmd+C / Ctrl+A / Cmd+A
-    if ((e.ctrlKey || e.metaKey) && ['c', 'C', 'a', 'A', 'x', 'X'].includes(e.key)) {
+  // Intercept Ctrl+C / Cmd+C / Ctrl+X / Cmd+X / Ctrl+Insert at the window level (capture phase)
+  useEffect(() => {
+    const handleKeyDownCapture = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement as HTMLElement | null;
+      const isInput =
+        activeEl &&
+        (activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.isContentEditable);
+
+      // If user is inside an input/textarea, allow copying only if text is selected inside that input
+      if (isInput) {
+        const inputEl = activeEl as HTMLInputElement | HTMLTextAreaElement;
+        const hasSelection =
+          typeof inputEl.selectionStart === 'number' &&
+          typeof inputEl.selectionEnd === 'number' &&
+          inputEl.selectionStart !== inputEl.selectionEnd;
+        if (hasSelection) {
+          return; // Allow standard input selection copying
+        }
+      }
+
+      const isCtrlOrMeta = e.ctrlKey || e.metaKey;
+      const key = e.key.toLowerCase();
+      // Intercept Ctrl+C, Cmd+C, Ctrl+Insert, Ctrl+X, Cmd+X, Ctrl+A outside inputs
+      if (
+        isCtrlOrMeta &&
+        (key === 'c' ||
+          key === 'x' ||
+          key === 'a' ||
+          e.code === 'KeyC' ||
+          e.code === 'KeyX' ||
+          e.code === 'KeyA' ||
+          e.key === 'Insert')
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        triggerWarning();
+      }
+    };
+
+    const handleCopyCapture = (e: ClipboardEvent) => {
+      const activeEl = document.activeElement as HTMLElement | null;
+      const isInput =
+        activeEl &&
+        (activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.isContentEditable);
+
+      if (isInput) {
+        const inputEl = activeEl as HTMLInputElement | HTMLTextAreaElement;
+        const hasSelection =
+          typeof inputEl.selectionStart === 'number' &&
+          typeof inputEl.selectionEnd === 'number' &&
+          inputEl.selectionStart !== inputEl.selectionEnd;
+        if (hasSelection) return;
+      }
+
       e.preventDefault();
+      e.stopPropagation();
+      if (e.clipboardData) {
+        e.clipboardData.setData('text/plain', '');
+      }
       triggerWarning();
-    }
-  };
+    };
+
+    window.addEventListener('keydown', handleKeyDownCapture, true);
+    window.addEventListener('copy', handleCopyCapture, true);
+    window.addEventListener('cut', handleCopyCapture, true);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDownCapture, true);
+      window.removeEventListener('copy', handleCopyCapture, true);
+      window.removeEventListener('cut', handleCopyCapture, true);
+      if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+    };
+  }, [triggerWarning]);
 
   return (
     <div
-      tabIndex={0}
+      tabIndex={-1}
       onContextMenu={(e) => {
         e.preventDefault();
         triggerWarning();
@@ -50,7 +124,6 @@ export function CodeViewer({
         e.preventDefault();
         triggerWarning();
       }}
-      onKeyDown={handleKeyDown}
       className="rounded-lg border border-slate-800 bg-[#06090e] overflow-hidden font-mono text-sm shadow-inner relative select-none focus:outline-none"
       style={{
         userSelect: 'none',
@@ -61,9 +134,9 @@ export function CodeViewer({
     >
       {/* Dynamic Security Banner / Toast */}
       {warning && (
-        <div className="absolute top-12 left-1/2 -translate-x-1/2 z-20 px-4 py-2 rounded-md bg-red-950/95 border border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] text-red-300 text-xs font-bold tracking-wider uppercase flex items-center space-x-2 animate-bounce">
+        <div className="absolute top-12 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-md bg-red-950/95 border border-red-500 shadow-[0_0_25px_rgba(239,68,68,0.5)] text-red-300 text-xs font-bold tracking-wider uppercase flex items-center space-x-2 animate-bounce backdrop-blur">
           <ShieldAlert className="w-4 h-4 text-red-400 shrink-0" />
-          <span>SECURITY PROTOCOL: CODE COPYING IS RESTRICTED</span>
+          <span>SECURITY PROTOCOL: CTRL+C IS RESTRICTED // CODE CANNOT BE COPIED</span>
         </div>
       )}
 
@@ -103,7 +176,7 @@ export function CodeViewer({
                   {(idx + 1).toString().padStart(2, '0')}
                 </td>
                 <td
-                  className="text-slate-200 whitespace-pre font-mono text-xs md:text-sm select-none"
+                  className="text-slate-200 whitespace-pre font-mono text-xs md:text-sm select-none pointer-events-none"
                   style={{
                     userSelect: 'none',
                     WebkitUserSelect: 'none',
