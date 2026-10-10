@@ -63,7 +63,7 @@ const EventSessionSchema = new Schema<IEventSession>(
     },
     maxTabSwitches: {
       type: Number,
-      default: 4,
+      default: 3,
     },
     endReason: {
       type: String,

@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
         expiresAt: session.expiresAt,
         completedAt: session.completedAt,
         tabSwitchCount: session.tabSwitchCount ?? 0,
-        maxTabSwitches: session.maxTabSwitches ?? 4,
+        maxTabSwitches: session.maxTabSwitches ?? 3,
         endReason: session.endReason ?? null,
       },
       timer,

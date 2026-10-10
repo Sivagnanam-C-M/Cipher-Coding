@@ -173,7 +173,7 @@ export default function MissionDashboardPage() {
         setSessionState(
           sessionJson.session.status,
           sessionJson.session.tabSwitchCount ?? 0,
-          sessionJson.session.maxTabSwitches ?? 4,
+          sessionJson.session.maxTabSwitches ?? 3,
           sessionJson.session.endReason ?? null
         );
       }
@@ -245,7 +245,7 @@ export default function MissionDashboardPage() {
         setSessionState(
           data.session.status,
           data.session.tabSwitchCount ?? 0,
-          data.session.maxTabSwitches ?? 4,
+          data.session.maxTabSwitches ?? 3,
           data.session.endReason ?? null
         );
       }
@@ -668,7 +668,7 @@ export default function MissionDashboardPage() {
             CHALLENGE TERMINATED // PROCTOR VIOLATION
           </div>
           <p className="text-xs sm:text-sm text-slate-200 max-w-2xl mx-auto">
-            Maximum tab switches ({missionData?.session.tabSwitchCount ?? 5}/{maxTabSwitches}) were exceeded.
+            Maximum tab switches ({missionData?.session.tabSwitchCount ?? 4}/{maxTabSwitches}) were exceeded.
             The challenge has ended with your current score of{' '}
             <strong className="text-amber-400">{missionData?.score || 0} PTS</strong> and elapsed time.
           </p>
@@ -870,7 +870,7 @@ export default function MissionDashboardPage() {
               • <strong>Full-Page Mode:</strong> Upon launching, the investigation terminal will activate in full-screen mode.
             </p>
             <p>
-              • <strong>Tab Switching Limit:</strong> Switching tabs or windows is permitted a maximum of <strong>4 times</strong>. If exceeded, your challenge will immediately end with your current score and time recorded.
+              • <strong>Tab Switching Limit:</strong> Switching tabs or windows is permitted a maximum of <strong>3 times</strong>. If exceeded, your challenge will immediately end with your current score and time recorded.
             </p>
             <p className="text-slate-400 text-[11px]">
               • <strong>Authoritative Timer:</strong> Server countdown begins immediately and cannot be paused.

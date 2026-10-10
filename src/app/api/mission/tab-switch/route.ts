@@ -36,7 +36,7 @@ export async function POST() {
         ignored: true,
         status: session.status,
         tabSwitchCount: session.tabSwitchCount || 0,
-        maxTabSwitches: session.maxTabSwitches || 4,
+        maxTabSwitches: session.maxTabSwitches || 3,
         isTerminated: session.status === 'completed' || session.status === 'expired',
       });
     }
@@ -57,7 +57,7 @@ export async function POST() {
       );
     }
 
-    const maxSwitches = session.maxTabSwitches || 4;
+    const maxSwitches = session.maxTabSwitches || 3;
     const currentCount = session.tabSwitchCount || 0;
     const newCount = currentCount + 1;
     session.tabSwitchCount = newCount;

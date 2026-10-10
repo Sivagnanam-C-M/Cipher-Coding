@@ -49,7 +49,7 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [sessionStatus, setSessionStatus] = useState<string>('not_attended');
   const [tabSwitchCount, setTabSwitchCount] = useState<number>(0);
-  const [maxTabSwitches, setMaxTabSwitches] = useState<number>(4);
+  const [maxTabSwitches, setMaxTabSwitches] = useState<number>(3);
   const [isTerminated, setIsTerminated] = useState<boolean>(false);
   const [terminationData, setTerminationData] = useState<TerminationData | null>(null);
 
