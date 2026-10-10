@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Copy, Check, Terminal } from 'lucide-react';
+import React from 'react';
+import { Terminal } from 'lucide-react';
 
 interface CodeViewerProps {
   code: string;
@@ -14,19 +14,7 @@ export function CodeViewer({
   language = 'python',
   filename = 'recovered_artifact.bin',
 }: CodeViewerProps) {
-  const [copied, setCopied] = useState(false);
-
   const lines = code ? code.split('\n') : ['// No code captured'];
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy code to clipboard', err);
-    }
-  };
 
   return (
     <div className="rounded-lg border border-slate-800 bg-[#06090e] overflow-hidden font-mono text-sm shadow-inner">
@@ -37,24 +25,9 @@ export function CodeViewer({
           <span className="text-slate-300 font-semibold">{filename}</span>
           <span className="text-slate-600">[{language}]</span>
         </div>
-        <button
-          onClick={handleCopy}
-          type="button"
-          className="flex items-center space-x-1 px-2 py-1 rounded bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 hover:text-white transition-colors"
-          title="Copy code to clipboard"
-        >
-          {copied ? (
-            <>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-emerald-400 text-[11px]">COPIED</span>
-            </>
-          ) : (
-            <>
-              <Copy className="w-3.5 h-3.5" />
-              <span className="text-[11px]">COPY</span>
-            </>
-          )}
-        </button>
+        <div className="text-[11px] text-slate-500 font-mono tracking-wider uppercase select-none">
+          READ ONLY // LOGIC TRACE
+        </div>
       </div>
 
       {/* Code Lines Display (Strictly Read-Only) */}
