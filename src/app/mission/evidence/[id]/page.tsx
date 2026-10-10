@@ -215,6 +215,20 @@ export default function EvidencePage({
     fetchEvidence();
   }, [id]);
 
+  // Restrict copying of challenge and evidence code while preserving input field interactions
+  useEffect(() => {
+    const handleGlobalCopy = (e: ClipboardEvent) => {
+      const activeEl = document.activeElement as HTMLElement | null;
+      if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+        return; // Allow operative to copy/paste inside their answer box
+      }
+      e.preventDefault();
+    };
+
+    window.addEventListener('copy', handleGlobalCopy);
+    return () => window.removeEventListener('copy', handleGlobalCopy);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!answerInput.trim() || submitting || question?.isSolved) return;
