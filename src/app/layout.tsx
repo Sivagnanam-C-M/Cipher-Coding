@@ -6,6 +6,10 @@ export const metadata: Metadata = {
   title: 'CIPHER CODING — OPERATION ZERO DAY',
   description:
     'An individual cybersecurity-themed code-deciphering competition. Read the code, trace execution, uncover the truth.',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({

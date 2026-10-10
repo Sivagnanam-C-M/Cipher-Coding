@@ -46,6 +46,17 @@ export default async function AccessGatewayPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Gateway Header */}
         <div className="text-center space-y-4">
+          <div className="inline-flex justify-center mb-1">
+            <div className="relative p-1 rounded-2xl bg-gradient-to-b from-cyan-500/30 to-slate-900 border border-cyan-500/50 shadow-[0_0_35px_rgba(6,182,212,0.35)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="Cipher Coding: Operation Zero Day Logo"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl object-contain drop-shadow-[0_0_15px_rgba(6,182,212,0.6)]"
+              />
+            </div>
+          </div>
+
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs tracking-widest uppercase">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse inline-block" />
             SECURE TERMINAL GATEWAY // IDENTITY VERIFICATION REQUIRED
