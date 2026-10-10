@@ -132,9 +132,9 @@ export function CodeViewer({
         msUserSelect: 'none',
       }}
     >
-      {/* Dynamic Security Banner / Toast */}
+      {/* Security Toast: Single Top Floating Alert */}
       {warning && (
-        <div className="absolute top-12 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-md bg-red-950/95 border border-red-500 shadow-[0_0_25px_rgba(239,68,68,0.5)] text-red-300 text-xs font-bold tracking-wider uppercase flex items-center space-x-2 animate-bounce backdrop-blur">
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-lg bg-red-950/95 border border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.6)] text-red-200 text-xs font-mono font-bold tracking-wider uppercase flex items-center space-x-2.5 animate-bounce backdrop-blur whitespace-nowrap">
           <ShieldAlert className="w-4 h-4 text-red-400 shrink-0" />
           <span>SECURITY PROTOCOL: CTRL+C IS RESTRICTED // CODE CANNOT BE COPIED</span>
         </div>
