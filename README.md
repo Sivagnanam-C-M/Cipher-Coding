@@ -58,9 +58,9 @@ npm install
 ```
 
 ### Environment Configuration
-Copy `.env.example` to `.env.local`:
+Create a `.env.local` file in the project root:
 ```bash
-cp .env.example .env.local
+touch .env.local
 ```
 
 Configure your environment variables:
