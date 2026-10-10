@@ -56,7 +56,6 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
   const [showWarningModal, setShowWarningModal] = useState<boolean>(false);
   const [warningCount, setWarningCount] = useState<number>(0);
   const [showTerminatedModal, setShowTerminatedModal] = useState<boolean>(false);
-  const [showFullscreenWarningModal, setShowFullscreenWarningModal] = useState<boolean>(false);
   const [fullscreenWarningCount, setFullscreenWarningCount] = useState<number>(0);
 
   useEffect(() => {
@@ -82,8 +81,6 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
       wasFullscreenRef.current = true;
     } catch (err) {
       console.warn('[Proctor] Fullscreen request not granted:', err);
-    } finally {
-      setShowFullscreenWarningModal(false);
     }
   }, []);
 
@@ -117,11 +114,9 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
 
       if (isFull) {
         wasFullscreenRef.current = true;
-        setShowFullscreenWarningModal(false);
-      } else if (wasFullscreenRef.current && sessionStatus === 'active' && !isTerminated) {
-        // Participant was in fullscreen and explicitly exited (e.g. ESC key)
+      } else if (sessionStatus === 'active' && !isTerminated) {
+        // Participant exited fullscreen during active mission
         wasFullscreenRef.current = false;
-        setShowFullscreenWarningModal(true);
         setFullscreenWarningCount((prev) => prev + 1);
       }
     };
@@ -252,29 +247,8 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
         setSessionState,
       }}
     >
-      {/* Full-Page Mode Reminder Banner (if mission is active but not fullscreen) */}
-      {isActiveMission && !isFullscreen && !isTerminated && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-red-950/95 border-b-2 border-red-500 px-4 py-2.5 backdrop-blur-md shadow-2xl flex flex-wrap items-center justify-between gap-3 font-mono animate-in fade-in slide-in-from-top duration-300">
-          <div className="flex items-center space-x-3 text-red-200 text-xs sm:text-sm">
-            <ShieldAlert className="w-5 h-5 text-red-400 shrink-0 animate-pulse" />
-            <span>
-              <strong className="text-white uppercase tracking-wider font-bold">FULL-PAGE MODE REQUIRED:</strong>{' '}
-              Investigation protocols require full-screen terminal mode.
-            </span>
-          </div>
-          <CyberButton
-            variant="crimson"
-            size="sm"
-            icon={<Maximize2 className="w-4 h-4" />}
-            onClick={requestFullscreen}
-          >
-            ENTER FULL-PAGE MODE
-          </CyberButton>
-        </div>
-      )}
-
-      {/* Fullscreen Exit Warning Modal - Immediate Auto Re-entry */}
-      {mounted && showFullscreenWarningModal && !isTerminated && typeof document !== 'undefined' && createPortal(
+      {/* Fullscreen Enforcement Modal: Strictly blocks the screen whenever an active mission is in windowed mode */}
+      {mounted && isActiveMission && !isFullscreen && !isTerminated && typeof document !== 'undefined' && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -285,7 +259,9 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
             width: '100vw',
             height: '100vh',
             zIndex: 999997,
-            backgroundColor: '#030206',
+            backgroundColor: 'rgba(3, 2, 6, 0.96)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -297,18 +273,18 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
             style={{
               backgroundColor: '#0c0610',
               border: '2px solid #ef4444',
-              boxShadow: '0 0 60px rgba(239,68,68,0.5)',
+              boxShadow: '0 0 70px rgba(239,68,68,0.5)',
             }}
-            className="relative w-full max-w-lg rounded-xl p-6 sm:p-8 space-y-5 text-center"
+            className="relative w-full max-w-lg rounded-xl p-6 sm:p-8 space-y-6 text-center"
           >
             <div className="flex items-center justify-center space-x-2 text-red-500">
-              <ShieldAlert className="w-14 h-14 animate-pulse" />
+              <ShieldAlert className="w-16 h-16 animate-pulse drop-shadow-[0_0_15px_rgba(239,68,68,0.7)]" />
             </div>
 
-            <div className="space-y-1">
-              <Badge variant="crimson">PROCTORING SECURITY BREACH</Badge>
+            <div className="space-y-1.5">
+              <Badge variant="crimson">PROCTORING INTEGRITY PROTOCOL</Badge>
               <h2 className="text-xl sm:text-2xl font-black text-white tracking-wider uppercase">
-                FULLSCREEN MODE EXITED
+                FULL-SCREEN TERMINAL REQUIRED
               </h2>
             </div>
 
@@ -317,16 +293,16 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
               className="p-4 rounded-lg space-y-3"
             >
               <div className="text-xs font-bold text-red-400 uppercase tracking-widest">
-                AUTOMATIC RE-ENGAGEMENT PROTOCOL ACTIVE
+                ACTIVE INVESTIGATION LOCKED
               </div>
               <p className="text-xs text-slate-200 font-sans leading-relaxed">
-                Investigation integrity strictly requires full-screen terminal operation. Exiting full screen is monitored by Mission Proctoring.
+                Operation Zero Day is an active proctored competition. Challenges, case notes, and evidence are locked until full-screen terminal mode is active.
               </p>
               <div
                 style={{ backgroundColor: '#0a0309', border: '1px solid rgba(220,38,38,0.5)' }}
                 className="p-3 rounded text-xs text-amber-300 font-mono"
               >
-                ⚡ Fullscreen mode is required to maintain platform security.
+                ⚡ Tab Switches Remaining: <strong className="text-white font-bold">{remainingSwitches} of {maxTabSwitches}</strong>
               </div>
             </div>
 
@@ -334,9 +310,9 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
               <CyberButton
                 variant="crimson"
                 size="lg"
-                className="w-full justify-center shadow-[0_0_25px_rgba(239,68,68,0.5)] font-bold tracking-wider"
+                icon={<Maximize2 className="w-5 h-5" />}
+                className="w-full justify-center shadow-[0_0_30px_rgba(239,68,68,0.6)] font-bold tracking-wider py-3 text-sm sm:text-base"
                 onClick={async () => {
-                  setShowFullscreenWarningModal(false);
                   try {
                     await requestFullscreen();
                   } catch (err) {
@@ -344,7 +320,7 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
                   }
                 }}
               >
-                RESTORE FULLSCREEN
+                ACTIVATE FULL-SCREEN TERMINAL
               </CyberButton>
             </div>
           </div>
