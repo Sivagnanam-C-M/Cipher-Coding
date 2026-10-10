@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Terminal, ShieldAlert } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Terminal, ShieldAlert, X } from 'lucide-react';
 
 interface CodeViewerProps {
   code: string;
@@ -15,7 +16,12 @@ export function CodeViewer({
   filename = 'recovered_artifact.bin',
 }: CodeViewerProps) {
   const [warning, setWarning] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const warningTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const lines = code ? code.split('\n') : ['// No code captured'];
 
@@ -106,42 +112,66 @@ export function CodeViewer({
   }, [triggerWarning]);
 
   return (
-    <div
-      tabIndex={-1}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        triggerWarning();
-      }}
-      onCopy={(e) => {
-        e.preventDefault();
-        triggerWarning();
-      }}
-      onCut={(e) => {
-        e.preventDefault();
-        triggerWarning();
-      }}
-      onDragStart={(e) => {
-        e.preventDefault();
-        triggerWarning();
-      }}
-      className="rounded-lg border border-slate-800 bg-[#06090e] overflow-hidden font-mono text-sm shadow-inner relative select-none focus:outline-none"
-      style={{
-        userSelect: 'none',
-        WebkitUserSelect: 'none',
-        MozUserSelect: 'none',
-        msUserSelect: 'none',
-      }}
-    >
-      {/* Security Toast: Single Top Floating Alert */}
-      {warning && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-lg bg-red-950/95 border border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.6)] text-red-200 text-xs font-mono font-bold tracking-wider uppercase flex items-center space-x-2.5 animate-bounce backdrop-blur whitespace-nowrap">
-          <ShieldAlert className="w-4 h-4 text-red-400 shrink-0" />
-          <span>SECURITY PROTOCOL: CTRL+C IS RESTRICTED // CODE CANNOT BE COPIED</span>
-        </div>
-      )}
+    <>
+      {/* Global Security Toast: Portaled directly to body to avoid container overflow clipping */}
+      {mounted &&
+        warning &&
+        createPortal(
+          <div
+            role="alert"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[9999] max-w-[92vw] sm:max-w-lg w-auto px-4 py-3 rounded-lg bg-[#0c0507]/95 border border-red-500/80 shadow-[0_0_30px_rgba(239,68,68,0.5)] text-red-200 font-mono flex items-center space-x-3 backdrop-blur-md animate-in fade-in slide-in-from-bottom-4 duration-200 pointer-events-auto"
+          >
+            <div className="p-1.5 rounded-md bg-red-500/20 border border-red-500/40 shrink-0">
+              <ShieldAlert className="w-4 h-4 text-red-400" />
+            </div>
+            <div className="flex flex-col text-left pr-2">
+              <span className="text-[11px] font-bold tracking-wider text-red-400 uppercase">
+                SECURITY PROTOCOL ACTIVATED
+              </span>
+              <span className="text-xs text-red-200/90 font-medium">
+                Ctrl+C is restricted. Code deciphering requires mental trace.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setWarning(false)}
+              className="p-1 rounded text-red-400/60 hover:text-red-200 hover:bg-red-950/60 transition-colors ml-auto shrink-0"
+              aria-label="Dismiss alert"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>,
+          document.body
+        )}
 
-      {/* Code Header Bar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[#0a0f18] border-b border-slate-800/80 text-xs text-slate-400 select-none">
+      <div
+        tabIndex={-1}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          triggerWarning();
+        }}
+        onCopy={(e) => {
+          e.preventDefault();
+          triggerWarning();
+        }}
+        onCut={(e) => {
+          e.preventDefault();
+          triggerWarning();
+        }}
+        onDragStart={(e) => {
+          e.preventDefault();
+          triggerWarning();
+        }}
+        className="rounded-lg border border-slate-800 bg-[#06090e] overflow-hidden font-mono text-sm shadow-inner relative select-none focus:outline-none"
+        style={{
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          MozUserSelect: 'none',
+          msUserSelect: 'none',
+        }}
+      >
+        {/* Code Header Bar */}
+        <div className="flex items-center justify-between px-4 py-2 bg-[#0a0f18] border-b border-slate-800/80 text-xs text-slate-400 select-none">
         <div className="flex items-center space-x-2">
           <Terminal className="w-3.5 h-3.5 text-cyan-400" />
           <span className="text-slate-300 font-semibold">{filename}</span>
@@ -182,7 +212,8 @@ export function CodeViewer({
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
