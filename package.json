@@ -1,0 +1,45 @@
+{
+  "name": "cipher-coding-operation-zero-day",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "node --loader ts-node/esm src/scripts/seed.ts || tsx src/scripts/seed.ts",
+    "seed:run": "npx tsx src/scripts/seed.ts",
+    "verify": "npx tsx src/scripts/verify-platform.ts",
+    "test": "npx tsx tests/run-all-tests.ts",
+    "test:all": "npx tsx tests/run-all-tests.ts",
+    "test:unit": "npx tsx tests/unit.test.ts",
+    "test:integration": "npx tsx tests/integration.test.ts",
+    "test:whitebox": "npx tsx tests/whitebox.test.ts",
+    "test:blackbox": "npx tsx tests/blackbox.test.ts"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
+    "jose": "^5.9.6",
+    "lucide-react": "^0.475.0",
+    "mongoose": "^8.10.0",
+    "next": "^15.1.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.17.17",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "autoprefixer": "^10.4.20",
+    "dotenv": "^16.4.7",
+    "mongodb-memory-server": "^10.1.3",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
