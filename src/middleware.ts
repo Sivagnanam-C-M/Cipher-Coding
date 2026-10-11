@@ -41,14 +41,15 @@ async function getAuthenticatedRole(req: NextRequest): Promise<'participant' | '
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  const isRootRoute = pathname === '/';
   const isLoginRoute = pathname === '/login';
   const isAdminLoginRoute = pathname === '/admin/login';
   const isRegisterRoute = pathname === '/register';
   const isMissionRoute = pathname.startsWith('/mission');
   const isAdminRoute = pathname.startsWith('/admin') && !isAdminLoginRoute;
 
-  // 1. If user is accessing login or register pages, redirect if already authenticated
-  if (isLoginRoute || isRegisterRoute) {
+  // 1. If user is accessing root gateway, login or register pages, redirect if already authenticated
+  if (isRootRoute || isLoginRoute || isRegisterRoute) {
     const role = await getAuthenticatedRole(req);
     if (role === 'participant') {
       return NextResponse.redirect(new URL('/mission', req.url));
@@ -97,6 +98,7 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    '/',
     '/mission/:path*',
     '/admin/:path*',
     '/login',

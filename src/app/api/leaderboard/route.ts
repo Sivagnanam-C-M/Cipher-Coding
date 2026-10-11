@@ -113,9 +113,13 @@ export async function GET() {
       });
     }
 
+    const CACHE_HEADERS = {
+      'Cache-Control': 'public, s-maxage=2, stale-while-revalidate=5',
+    };
+
     const now = Date.now();
     if (cachedLeaderboard && now - cachedLeaderboard.timestamp < CACHE_TTL_MS) {
-      return NextResponse.json(cachedLeaderboard.data);
+      return NextResponse.json(cachedLeaderboard.data, { headers: CACHE_HEADERS });
     }
 
     const isAdmin = authSession?.role === 'admin';
@@ -148,10 +152,10 @@ export async function GET() {
         enabled: false,
         message: 'LEADERBOARD CLASSIFIED: Live operational standings are currently restricted.',
         leaderboard: [],
-      });
+      }, { headers: CACHE_HEADERS });
     }
 
-    return NextResponse.json(payload);
+    return NextResponse.json(payload, { headers: CACHE_HEADERS });
   } catch (error: any) {
     console.error('[API /api/leaderboard] Error:', error);
     return NextResponse.json(

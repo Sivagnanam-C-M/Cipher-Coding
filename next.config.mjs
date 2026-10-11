@@ -48,6 +48,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/:asset(logo\\.png|logo\\.jpg|icon\\.png|icon\\.jpg|robots\\.txt)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=604800, stale-while-revalidate=86400',
+          },
+        ],
+      },
     ];
   },
 };

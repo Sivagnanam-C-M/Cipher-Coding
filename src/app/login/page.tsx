@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LogIn, Key, AlertCircle, ShieldAlert, Eye, EyeOff } from 'lucide-react';
@@ -17,22 +17,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-
-  useEffect(() => {
-    fetch('/api/auth/me', { cache: 'no-store' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.authenticated && data?.user) {
-          if (data.user.role === 'admin') {
-            router.replace('/admin');
-          } else {
-            router.replace('/mission');
-          }
-        }
-      })
-      .catch(() => {});
-  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

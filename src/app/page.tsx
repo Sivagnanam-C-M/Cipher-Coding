@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import {
   ShieldAlert,
   Terminal,
@@ -16,27 +15,13 @@ import {
 import TerminalCard from '@/components/ui/TerminalCard';
 import CyberButton from '@/components/ui/CyberButton';
 import Badge from '@/components/ui/Badge';
-import { getParticipantSession, getAdminSession } from '@/lib/auth/session';
 
 export const metadata = {
   title: 'Operative Access Gateway | Cipher Coding: Operation Zero Day',
   description: 'Identity verification required. Register or authenticate to enter Operation Zero Day.',
 };
 
-export default async function AccessGatewayPage() {
-  const [partSession, adminSession] = await Promise.all([
-    getParticipantSession(),
-    getAdminSession(),
-  ]);
-
-  // If already authenticated, forward directly to mission or admin console
-  if (partSession) {
-    redirect('/mission');
-  }
-  if (adminSession) {
-    redirect('/admin');
-  }
-
+export default function AccessGatewayPage() {
   return (
     <div className="relative overflow-hidden py-10 md:py-16 font-mono">
       {/* Dynamic Background Gradients */}

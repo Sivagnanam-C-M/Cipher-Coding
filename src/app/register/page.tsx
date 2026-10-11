@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, UserPlus, Key, ArrowRight, AlertCircle, Copy, Check, Eye, EyeOff } from 'lucide-react';
@@ -24,22 +24,6 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [registeredCode, setRegisteredCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-
-
-  useEffect(() => {
-    fetch('/api/auth/me', { cache: 'no-store' })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.authenticated && data?.user) {
-          if (data.user.role === 'admin') {
-            router.replace('/admin');
-          } else {
-            router.replace('/mission');
-          }
-        }
-      })
-      .catch(() => {});
-  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
