@@ -36,8 +36,8 @@ export default async function BriefingPage() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         {/* Mission Briefing Hero Banner */}
-        <div className="text-center space-y-6">
-          <div className="inline-flex justify-center mb-1">
+        <div className="flex flex-col items-center text-center space-y-6">
+          <div className="flex justify-center">
             <div className="relative p-1 rounded-2xl bg-gradient-to-b from-cyan-500/30 to-slate-900 border border-cyan-500/50 shadow-[0_0_35px_rgba(6,182,212,0.35)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
