@@ -180,29 +180,9 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-slate-300 tracking-wider uppercase font-semibold">
-                  PASSWORD
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 transition-colors"
-                  tabIndex={-1}
-                >
-                  {showPassword ? (
-                    <>
-                      <EyeOff className="w-3.5 h-3.5" />
-                      <span>HIDE</span>
-                    </>
-                  ) : (
-                    <>
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>VIEW PASSWORD</span>
-                    </>
-                  )}
-                </button>
-              </div>
+              <label className="block text-slate-300 mb-1 tracking-wider uppercase font-semibold">
+                PASSWORD
+              </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -226,29 +206,9 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-slate-300 tracking-wider uppercase font-semibold">
-                  CONFIRM PASSWORD
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 transition-colors"
-                  tabIndex={-1}
-                >
-                  {showConfirmPassword ? (
-                    <>
-                      <EyeOff className="w-3.5 h-3.5" />
-                      <span>HIDE</span>
-                    </>
-                  ) : (
-                    <>
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>VIEW PASSWORD</span>
-                    </>
-                  )}
-                </button>
-              </div>
+              <label className="block text-slate-300 mb-1 tracking-wider uppercase font-semibold">
+                CONFIRM PASSWORD
+              </label>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}

@@ -115,29 +115,9 @@ export default function AdminLoginPage() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-slate-300 tracking-wider uppercase font-semibold">
-                SECURITY KEY / PASSWORD
-              </label>
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="text-[11px] text-amber-400 hover:text-amber-300 flex items-center space-x-1 transition-colors"
-                tabIndex={-1}
-              >
-                {showPassword ? (
-                  <>
-                    <EyeOff className="w-3.5 h-3.5" />
-                    <span>HIDE</span>
-                  </>
-                ) : (
-                  <>
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>VIEW PASSWORD</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <label className="block text-slate-300 mb-1 tracking-wider uppercase font-semibold">
+              SECURITY KEY / PASSWORD
+            </label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
