@@ -1,9 +1,11 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 interface CyberButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'cyan' | 'emerald' | 'crimson' | 'secondary' | 'amber';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   icon?: React.ReactNode;
   children: React.ReactNode;
@@ -23,6 +25,7 @@ export function CyberButton({
     'inline-flex items-center justify-center font-mono font-medium rounded transition-all duration-200 uppercase tracking-wider focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed select-none';
 
   const sizeClasses = {
+    xs: 'text-[10px] px-2 py-0.5 gap-1',
     sm: 'text-xs px-3 py-1.5 gap-1.5',
     md: 'text-sm px-4 py-2.5 gap-2',
     lg: 'text-base px-6 py-3.5 gap-2.5',
@@ -38,12 +41,12 @@ export function CyberButton({
 
   return (
     <button
-      className={`${baseClasses} ${sizeClasses} ${variantClasses} ${className}`}
+      className={twMerge(clsx(baseClasses, sizeClasses, variantClasses, className))}
       disabled={disabled || isLoading}
       {...props}
     >
       {isLoading ? (
-        <Loader2 className="w-4 h-4 animate-spin text-current" />
+        <Loader2 className={`${size === 'xs' ? 'w-3 h-3' : 'w-4 h-4'} animate-spin text-current`} />
       ) : (
         icon && <span className="inline-flex shrink-0">{icon}</span>
       )}

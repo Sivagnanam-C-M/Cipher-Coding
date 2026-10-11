@@ -360,26 +360,26 @@ export default function AdminParticipantsPage() {
 
                   return (
                     <tr key={p.id} className="hover:bg-slate-800/20 transition-colors">
-                      <td className="py-3 px-3 font-bold text-cyan-400 font-mono">
+                      <td className="py-2 px-3 font-bold text-cyan-400 font-mono">
                         {p.participantCode}
                       </td>
-                      <td className="py-3 px-3 font-semibold text-slate-200">
+                      <td className="py-2 px-3 font-semibold text-slate-200">
                         <div>{p.name}</div>
                         <div className="text-[10px] text-slate-500 font-normal">{p.email}</div>
                       </td>
-                      <td className="py-3 px-3 text-slate-400 truncate max-w-xs">
+                      <td className="py-2 px-3 text-slate-400 truncate max-w-xs">
                         {p.college}
                       </td>
-                      <td className="py-3 px-2 text-center text-slate-300 font-semibold">
+                      <td className="py-2 px-2 text-center text-slate-300 font-semibold">
                         {p.questionsSolved}
                       </td>
-                      <td className="py-3 px-3 text-right font-extrabold text-emerald-400">
+                      <td className="py-2 px-3 text-right font-extrabold text-emerald-400">
                         {p.score} PTS
                       </td>
-                      <td className="py-3 px-3 text-center">
+                      <td className="py-2 px-3 text-center">
                         {getStatusBadge(p.sessionStatus, p.endReason, p.tabSwitchCount)}
                       </td>
-                      <td className="py-3 px-3 text-center">
+                      <td className="py-2 px-3 text-center">
                         <div className="inline-flex items-center justify-center gap-1.5">
                           <span
                             className={`font-mono text-xs font-bold ${
@@ -398,33 +398,33 @@ export default function AdminParticipantsPage() {
                               title="Reduce 1 tab switch"
                               disabled={isActionLoading}
                               onClick={() => handleReduceOneSwitch(p)}
-                              className="p-1 rounded bg-amber-500/10 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 transition-all hover:scale-110 active:scale-95 disabled:opacity-50"
+                              className="w-5 h-5 rounded bg-amber-500/10 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 transition-all hover:scale-110 active:scale-95 disabled:opacity-50 inline-flex items-center justify-center"
                             >
-                              <Minus className="w-3 h-3" />
+                              <Minus className="w-2.5 h-2.5" />
                             </button>
                           )}
                         </div>
                       </td>
-                      <td className="py-3 px-3 text-right">
-                        <div className="inline-flex items-center justify-end gap-1.5">
+                      <td className="py-2 px-3 text-right">
+                        <div className="inline-flex items-center justify-end gap-1">
                           <CyberButton
                             variant="amber"
-                            size="sm"
-                            className="px-2 py-1 text-[10px] tracking-wider"
+                            size="xs"
+                            className="h-6 px-2 py-0 text-[10px] font-bold tracking-wider leading-none"
                             onClick={() => {
                               setTabSwitchModalTarget(p);
                               setCustomTabCount(p.tabSwitchCount ?? 0);
                             }}
-                            icon={<Sliders className="w-3 h-3" />}
+                            icon={<Sliders className="w-2.5 h-2.5" />}
                           >
                             SWITCHES
                           </CyberButton>
                           <CyberButton
                             variant="crimson"
-                            size="sm"
-                            className="px-2 py-1 text-[10px] tracking-wider"
+                            size="xs"
+                            className="h-6 px-2 py-0 text-[10px] font-bold tracking-wider leading-none"
                             onClick={() => setIndividualResetTarget(p)}
-                            icon={<RotateCcw className="w-3 h-3" />}
+                            icon={<RotateCcw className="w-2.5 h-2.5" />}
                           >
                             RESET
                           </CyberButton>
