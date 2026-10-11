@@ -1,12 +1,4 @@
 import mongoose from 'mongoose';
-import dns from 'dns';
-
-// Ensure rock-solid SRV DNS resolution for MongoDB Atlas on Windows environments
-try {
-  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
-} catch {
-  // safe fallback
-}
 
 /**
  * MongoDB connection cache for Next.js hot module reloading
@@ -36,8 +28,8 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
   if (!cached!.promise) {
     const opts: mongoose.ConnectOptions = {
       bufferCommands: false,
-      maxPoolSize: 100,
-      minPoolSize: 10,
+      maxPoolSize: 10,
+      minPoolSize: 0,
       maxIdleTimeMS: 60000,
       serverSelectionTimeoutMS: 10000,
       connectTimeoutMS: 10000,
