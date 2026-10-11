@@ -149,7 +149,6 @@ export async function GET(
         answerType: question.answerType,
         points: question.points,
         difficulty: question.difficulty,
-        hint: question.hint,
         isFinal: question.isFinal,
         isSolved,
         attempts,

@@ -11,7 +11,6 @@ import {
   ShieldAlert,
   Send,
   HelpCircle,
-  Lightbulb,
   CheckCircle2,
   AlertTriangle,
   RotateCw,
@@ -81,7 +80,6 @@ export default function EvidencePage({
   const [loading, setLoading] = useState(!cachedInitial);
   const [submitting, setSubmitting] = useState(false);
   const [answerInput, setAnswerInput] = useState('');
-  const [showHint, setShowHint] = useState(false);
   const [feedback, setFeedback] = useState<SubmissionFeedback | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [storyRevealModalOpen, setStoryRevealModalOpen] = useState(false);
@@ -156,7 +154,6 @@ export default function EvidencePage({
       }
       setAnswerInput('');
       setFeedback(null);
-      setShowHint(false);
 
       // Sync session & proctoring state from consolidated response
       if (qData.session) {
@@ -441,26 +438,6 @@ export default function EvidencePage({
             </span>
             <p className="text-sm font-semibold text-slate-100">{question.questionText}</p>
           </div>
-
-          {/* Hint Drawer */}
-          {question.hint && (
-            <div className="text-xs">
-              <button
-                type="button"
-                onClick={() => setShowHint(!showHint)}
-                className="inline-flex items-center space-x-1.5 text-amber-400/90 hover:text-amber-300 transition-colors"
-              >
-                <Lightbulb className="w-3.5 h-3.5" />
-                <span>{showHint ? 'HIDE INVESTIGATION HINT' : 'REQUEST INVESTIGATION HINT'}</span>
-              </button>
-
-              {showHint && (
-                <div className="mt-2 p-3 rounded bg-amber-950/20 border border-amber-500/30 text-amber-200">
-                  {question.hint}
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Feedback Display (Access Granted / Access Denied) */}
           {feedback && (

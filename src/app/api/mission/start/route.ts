@@ -168,7 +168,6 @@ export async function POST(req: NextRequest) {
         answerType: firstQ.answerType,
         points: firstQ.points,
         difficulty: firstQ.difficulty,
-        hint: firstQ.hint,
         isFinal: firstQ.isFinal,
         isSolved: p0?.status === 'solved',
         attempts: p0?.attempts || 0,

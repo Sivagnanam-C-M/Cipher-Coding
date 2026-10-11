@@ -43,7 +43,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "ZERO",
     "points": 10,
     "difficulty": "easy",
-    "hint": "Reverse the array to get [\"Z\", \"X\", \"E\", \"Y\", \"R\", \"Q\", \"O\"], then take elements at indices 0, 2, 4, 6.",
+    "hint": "",
     "explanation": "Indices 0, 2, 4, 6 give characters Z, E, R, O -> ZERO.",
     "isFinal": false,
     "isPublished": true
@@ -66,7 +66,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "03:17:42",
     "points": 10,
     "difficulty": "easy",
-    "hint": "Trace hour (2+1 = 3), minute (47-30 = 17, which is not < 0), seconds (42). Format is HH:MM:SS.",
+    "hint": "",
     "explanation": "hour = 3, minute = 17, seconds = 42. Output is 03:17:42.",
     "isFinal": false,
     "isPublished": true
@@ -89,7 +89,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "BLACK_FILE",
     "points": 10,
     "difficulty": "easy",
-    "hint": "Reverse parts[3] (\"KCALB\" -> \"BLACK\"), reverse parts[0]+parts[1] (\"ELIF\" -> \"FILE\"), and join with parts[2] (\"_\").",
+    "hint": "",
     "explanation": "\"BLACK\" + \"_\" + \"FILE\" = \"BLACK_FILE\".",
     "isFinal": false,
     "isPublished": true
@@ -112,7 +112,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "ACCESSED",
     "points": 10,
     "difficulty": "easy",
-    "hint": "Trace the actions in order: OPEN sets state to ACCESSED; READ matches none of the branches; CLOSE leaves state as is.",
+    "hint": "",
     "explanation": "Initial state \"SEALED\" changes to \"ACCESSED\" on \"OPEN\", and is not modified by subsequent actions.",
     "isFinal": false,
     "isPublished": true
@@ -135,7 +135,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "IF THEY TOLD YOU I STOLE IT",
     "points": 10,
     "difficulty": "medium",
-    "hint": "Shift each ASCII character back by 1 (e.g., J->I, G->F, !->space, U->T, I->H, F->E, Z->Y).",
+    "hint": "",
     "explanation": "Shifting each character by -1 decodes \"JG!UIFZ!UPME!ZPV!J!TUPMF!JU\" into \"IF THEY TOLD YOU I STOLE IT\".",
     "isFinal": false,
     "isPublished": true
@@ -158,7 +158,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "ADMIN-09",
     "points": 10,
     "difficulty": "easy",
-    "hint": "Check which account has records present in the deleted list [702, 705, 706].",
+    "hint": "",
     "explanation": "ADMIN-09 handled records 702, 705, and 706, all of which are in the deleted set.",
     "isFinal": false,
     "isPublished": true
@@ -181,7 +181,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "SUBJECT 0 — SYSTEMS ARCHITECT|SUBJECT 0 - SYSTEMS ARCHITECT",
     "points": 10,
     "difficulty": "easy",
-    "hint": "Match record with id \"S-00\": subject is \"SUBJECT 0\", and role is \"SYSTEMS \" + \"ARCHITECT\". Format with hyphen or em-dash: SUBJECT 0 — SYSTEMS ARCHITECT.",
+    "hint": "",
     "explanation": "id \"S-00\" sets subject to \"SUBJECT 0\" and department \"SYSTEMS\" concatenates position \"ARCHITECT\" to \"SYSTEMS ARCHITECT\".",
     "isFinal": false,
     "isPublished": true
@@ -204,7 +204,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "103 — HIGH|103 - HIGH",
     "points": 10,
     "difficulty": "easy",
-    "hint": "Trace: 18+8=26, 7*2=14, 23+8=31, 16*2=32. Sum = 103. Since 103 >= 100, result is HIGH.",
+    "hint": "",
     "explanation": "Sum is 26 + 14 + 31 + 32 = 103, which is >= 100, yielding \"103 — HIGH\".",
     "isFinal": false,
     "isPublished": true
@@ -227,7 +227,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "208 — THREAT — RESTRICTED|208 - THREAT - RESTRICTED",
     "points": 10,
     "difficulty": "medium",
-    "hint": "Normalize values: 42->52, 61->51, 48->58, 57->47. Sum = 208. Classify(208) is THREAT. Decide(THREAT) is RESTRICTED.",
+    "hint": "",
     "explanation": "Predict returns 52 + 51 + 58 + 47 = 208. Score >= 150 classifies as THREAT, which triggers decision RESTRICTED.",
     "isFinal": false,
     "isPublished": true
@@ -250,7 +250,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "PROFILES — 7|PROFILES - 7",
     "points": 10,
     "difficulty": "medium",
-    "hint": "Decode sector types by shifting each char back by 1 (e.g. QSPGJMFT -> PROFILES). Filter out CORRUPT. Pick highest priority.",
+    "hint": "",
     "explanation": "Decoded sectors: PREDICTION (4), IDENTITIES (9, CORRUPT), PROFILES (7), LOGS (5). Highest surviving priority is PROFILES with score 7.",
     "isFinal": false,
     "isPublished": true
@@ -273,7 +273,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "STOP LOOKING|STOPLOOKING|STOP_LOOKING",
     "points": 10,
     "difficulty": "hard",
-    "hint": "Trace the surveillance events. Increment watch_count on every WATCH or TRACE action. Append character only if privilege >= 7, action is WATCH/TRACE, and watch_count is odd.",
+    "hint": "",
     "explanation": "Events with WATCH and TRACE increment watch_count. Only events from accounts with privilege >= 7 during odd watch_count intervals yield letters: S, T, O, P, [space], L, O, O, K, I, N, G -> \"STOP LOOKING\".",
     "isFinal": false,
     "isPublished": true
@@ -296,7 +296,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "GRID-CONTROL — 3|GRID-CONTROL - 3",
     "points": 10,
     "difficulty": "hard",
-    "hint": "Trace the parent chain from ADMIN-09: ADMIN-09 (has DELETE, depth 0), SEC-04 (no DELETE, depth 1), GRID-OPS (has DELETE, depth 2), GRID-CONTROL (has DELETE, depth 3, no parent).",
+    "hint": "",
     "explanation": "Starting from ADMIN-09, the loop traverses parents up to GRID-CONTROL. At each step with DELETE in permissions, authority updates. GRID-CONTROL possesses DELETE permission at traversal depth 3.",
     "isFinal": false,
     "isPublished": true
@@ -319,7 +319,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "NODE-03|ARCHIVE ZERO|NODE-03 — ARCHIVE ZERO|NODE-03 - ARCHIVE ZERO|ARCHIVE_ZERO",
     "points": 15,
     "difficulty": "medium",
-    "hint": "seed = 3 + 17 + 3 + 9 = 32. 32 % 7 = 4. route[4] = NODE-03 (ARCHIVE ZERO).",
+    "hint": "",
     "explanation": "Timestamp (3+17=20) + erased records (3) + fragments (9) gives seed=32. 32 % 7 yields index 4: NODE-03 (ARCHIVE ZERO).",
     "isFinal": false,
     "isPublished": true
@@ -342,7 +342,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "82824206",
     "points": 20,
     "difficulty": "hard",
-    "hint": "Reconstruct dependency order: NONE -> K1(7) -> K3(4) -> K5(16) -> K2(23) -> K4(19) -> K6(12). Even divides by 2; odd adds 1.",
+    "hint": "",
     "explanation": "K1: 7->8, K3: 4->2, K5: 16->8, K2: 23->24, K4: 19->20, K6: 12->6. Concatenates to 82824206.",
     "isFinal": false,
     "isPublished": true
@@ -365,7 +365,7 @@ export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
     "correctAnswer": "INVESTIGATOR|YOU",
     "points": 25,
     "difficulty": "insane",
-    "hint": "Calculate candidate scores: ZERO=2, GRID-CTRL=1, ADMIN-09=1, INVESTIGATOR=4. The identity reaching score 4 is INVESTIGATOR.",
+    "hint": "",
     "explanation": "INVESTIGATOR meets all 4 criteria (rejected=1, followed=1, reached=1, recovered=1), giving score=4 and printing INVESTIGATOR.",
     "isFinal": true,
     "isPublished": true
