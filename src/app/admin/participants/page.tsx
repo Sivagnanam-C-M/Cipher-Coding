@@ -17,6 +17,10 @@ import {
   ShieldAlert,
   X,
   AlertTriangle,
+  Edit2,
+  Save,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import TerminalCard from '@/components/ui/TerminalCard';
 import CyberButton from '@/components/ui/CyberButton';
@@ -29,6 +33,7 @@ interface ParticipantRecord {
   email: string;
   college: string;
   participantCode: string;
+  preferredLanguage?: 'python' | 'java' | 'c' | 'cpp';
   registeredAt: string;
   missionStartedAt: string | null;
   sessionStatus: 'not_attended' | 'not_started' | 'active' | 'completed' | 'expired';
@@ -45,6 +50,22 @@ export default function AdminParticipantsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  // Edit operative modal
+  const [editTarget, setEditTarget] = useState<ParticipantRecord | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    email: '',
+    college: '',
+    participantCode: '',
+    preferredLanguage: 'python' as 'python' | 'java' | 'c' | 'cpp',
+    newPassword: '',
+    sessionStatus: 'not_attended' as 'not_attended' | 'not_started' | 'active' | 'completed' | 'expired',
+    tabSwitchCount: 0,
+  });
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   // Global reset modal
   const [resetModalOpen, setResetModalOpen] = useState(false);
@@ -64,6 +85,63 @@ export default function AdminParticipantsPage() {
 
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const openEditModal = (p: ParticipantRecord) => {
+    setEditTarget(p);
+    setEditFormData({
+      name: p.name,
+      email: p.email,
+      college: p.college,
+      participantCode: p.participantCode,
+      preferredLanguage: p.preferredLanguage || 'python',
+      newPassword: '',
+      sessionStatus: p.sessionStatus,
+      tabSwitchCount: p.tabSwitchCount ?? 0,
+    });
+    setEditError(null);
+    setShowNewPassword(false);
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editTarget) return;
+    setEditLoading(true);
+    setEditError(null);
+
+    try {
+      const payload: any = {
+        name: editFormData.name.trim(),
+        email: editFormData.email.trim(),
+        college: editFormData.college.trim(),
+        participantCode: editFormData.participantCode.trim().toUpperCase(),
+        preferredLanguage: editFormData.preferredLanguage,
+        sessionStatus: editFormData.sessionStatus,
+        tabSwitchCount: editFormData.tabSwitchCount,
+      };
+      if (editFormData.newPassword.trim()) {
+        payload.newPassword = editFormData.newPassword.trim();
+      }
+
+      const res = await fetch(`/api/admin/participants/${editTarget.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to update operative');
+      }
+
+      setSuccessMessage(data.message || `Operative ${editFormData.participantCode} updated successfully.`);
+      setEditTarget(null);
+      await fetchParticipants();
+    } catch (err: any) {
+      setEditError(err.message || 'Error updating operative');
+    } finally {
+      setEditLoading(false);
+    }
+  };
 
   const fetchParticipants = async (isManual = false) => {
     if (isManual) setRefreshing(true);
@@ -408,6 +486,15 @@ export default function AdminParticipantsPage() {
                       <td className="py-2 px-3 text-right">
                         <div className="inline-flex items-center justify-end gap-1">
                           <CyberButton
+                            variant="cyan"
+                            size="xs"
+                            className="h-6 px-2 py-0 text-[10px] font-bold tracking-wider leading-none"
+                            onClick={() => openEditModal(p)}
+                            icon={<Edit2 className="w-2.5 h-2.5" />}
+                          >
+                            EDIT
+                          </CyberButton>
+                          <CyberButton
                             variant="amber"
                             size="xs"
                             className="h-6 px-2 py-0 text-[10px] font-bold tracking-wider leading-none"
@@ -582,6 +669,211 @@ export default function AdminParticipantsPage() {
                 CANCEL
               </CyberButton>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Operative Modal */}
+      {editTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="relative w-full max-w-xl bg-[#0d1321] border border-cyan-500/50 rounded-lg shadow-[0_0_35px_rgba(6,182,212,0.25)] overflow-hidden font-mono max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 py-3.5 bg-[#080c14] border-b border-slate-800 shrink-0">
+              <div className="flex items-center space-x-2 text-cyan-400">
+                <Edit2 className="w-4 h-4 text-cyan-400" />
+                <h3 className="text-sm font-bold tracking-wider uppercase text-slate-100">
+                  EDIT OPERATIVE // {editTarget.participantCode}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditTarget(null)}
+                className="text-slate-400 hover:text-white transition-colors p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body Form */}
+            <form onSubmit={handleSaveEdit} className="p-5 text-xs text-slate-300 space-y-4 overflow-y-auto flex-1">
+              {editError && (
+                <div className="p-3 rounded bg-red-950/60 border border-red-500/80 text-xs text-red-300 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+                  <span>{editError}</span>
+                </div>
+              )}
+
+              {/* Grid 1: Name & Callsign */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                    Operative Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.name}
+                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    placeholder="Contestant full name"
+                    className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                    Participant Code (Callsign) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.participantCode}
+                    onChange={(e) => setEditFormData({ ...editFormData, participantCode: e.target.value.toUpperCase() })}
+                    placeholder="CYB-XXXX"
+                    className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-cyan-400 font-bold placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors uppercase font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Grid 2: Email & College */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                    Email Address *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={editFormData.email}
+                    onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                    placeholder="operative@college.edu"
+                    className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                    College / Institution *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.college}
+                    onChange={(e) => setEditFormData({ ...editFormData, college: e.target.value })}
+                    placeholder="College or university"
+                    className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Grid 3: Preferred Language & Session Status */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                    Preferred Syntax / Language
+                  </label>
+                  <select
+                    value={editFormData.preferredLanguage}
+                    onChange={(e) => setEditFormData({ ...editFormData, preferredLanguage: e.target.value as any })}
+                    className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-cyan-400 transition-colors uppercase"
+                  >
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                    Mission Session Status
+                  </label>
+                  <select
+                    value={editFormData.sessionStatus}
+                    onChange={(e) => setEditFormData({ ...editFormData, sessionStatus: e.target.value as any })}
+                    className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-slate-100 focus:outline-none focus:border-cyan-400 transition-colors uppercase"
+                  >
+                    <option value="not_attended">NOT ATTENDED</option>
+                    <option value="not_started">NOT STARTED</option>
+                    <option value="active">ACTIVE (IN PROGRESS)</option>
+                    <option value="completed">COMPLETED</option>
+                    <option value="expired">EXPIRED</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Grid 4: Tab Switches & Password Reset */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                    Tab Switches Count
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    value={editFormData.tabSwitchCount}
+                    onChange={(e) => setEditFormData({ ...editFormData, tabSwitchCount: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-slate-100 font-mono focus:outline-none focus:border-cyan-400 transition-colors"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">3 or more triggers proctor termination.</p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                      Reset Password (Optional)
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="text-[10px] text-cyan-400 hover:text-cyan-300 flex items-center space-x-1"
+                      tabIndex={-1}
+                    >
+                      {showNewPassword ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                      <span>{showNewPassword ? 'HIDE' : 'VIEW'}</span>
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      minLength={6}
+                      value={editFormData.newPassword}
+                      onChange={(e) => setEditFormData({ ...editFormData, newPassword: e.target.value })}
+                      placeholder="Leave blank to keep current"
+                      className="w-full px-3 py-2 pr-9 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 p-0.5"
+                      tabIndex={-1}
+                    >
+                      {showNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">Min 6 characters if resetting passphrase.</p>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+                <CyberButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setEditTarget(null)}
+                  disabled={editLoading}
+                >
+                  CANCEL
+                </CyberButton>
+                <CyberButton
+                  type="submit"
+                  variant="cyan"
+                  size="sm"
+                  isLoading={editLoading}
+                  icon={<Save className="w-3.5 h-3.5" />}
+                >
+                  SAVE CHANGES
+                </CyberButton>
+              </div>
+            </form>
           </div>
         </div>
       )}

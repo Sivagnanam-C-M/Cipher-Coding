@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
 
     const participants = await Participant.find(query)
       .sort({ createdAt: -1 })
-      .select('name email college participantCode createdAt');
+      .select('name email college participantCode preferredLanguage createdAt');
 
     const participantIds = participants.map((p) => p._id);
 
@@ -76,6 +76,7 @@ export async function GET(req: NextRequest) {
         email: p.email,
         college: p.college,
         participantCode: p.participantCode,
+        preferredLanguage: p.preferredLanguage || 'python',
         registeredAt: p.createdAt,
         missionStartedAt: s?.startedAt || null,
         sessionStatus: s?.status || 'not_attended',
