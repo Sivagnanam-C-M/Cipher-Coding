@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Trophy, Clock, Award, ShieldAlert, RotateCw, UserCheck } from 'lucide-react';
 import TerminalCard from '@/components/ui/TerminalCard';
 import CyberButton from '@/components/ui/CyberButton';
@@ -10,6 +11,7 @@ interface LeaderboardEntry {
   rank: number;
   participantId: string;
   participantCode: string;
+  name?: string;
   college: string;
   score: number;
   solvedCount: number;
@@ -19,6 +21,7 @@ interface LeaderboardEntry {
 }
 
 export default function LeaderboardPage() {
+  const router = useRouter();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [enabled, setEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -42,6 +45,17 @@ export default function LeaderboardPage() {
       if (isManual) setRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    fetch('/api/auth/me', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.authenticated && data?.user?.role === 'participant') {
+          router.replace('/mission');
+        }
+      })
+      .catch(() => {});
+  }, [router]);
 
   useEffect(() => {
     fetchLeaderboard();
@@ -109,7 +123,7 @@ export default function LeaderboardPage() {
             <thead>
               <tr className="border-b border-slate-800 text-[11px] text-slate-400 uppercase tracking-wider">
                 <th className="py-3 px-4">RANK</th>
-                <th className="py-3 px-4">OPERATIVE ID</th>
+                <th className="py-3 px-4">OPERATIVE NAME</th>
                 <th className="py-3 px-4 hidden md:table-cell">COLLEGE / INSTITUTION</th>
                 <th className="py-3 px-4 text-center">SOLVED</th>
                 <th className="py-3 px-4 text-right">SCORE</th>
@@ -145,8 +159,8 @@ export default function LeaderboardPage() {
                       <td className={`py-3.5 px-4 ${rankColor}`}>
                         #{entry.rank.toString().padStart(2, '0')}
                       </td>
-                      <td className="py-3.5 px-4 font-bold text-cyan-400">
-                        {entry.participantCode}
+                      <td className="py-3.5 px-4 font-bold text-cyan-400 truncate max-w-[180px] sm:max-w-xs" title={entry.name || entry.participantCode}>
+                        {entry.name || entry.participantCode}
                       </td>
                       <td className="py-3.5 px-4 text-slate-400 hidden md:table-cell truncate max-w-xs">
                         {entry.college}

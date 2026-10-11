@@ -72,6 +72,7 @@ async function generateLeaderboardData() {
     return {
       participantId: pid,
       participantCode: part.participantCode,
+      name: part.name,
       college: part.college,
       score,
       solvedCount,
@@ -103,12 +104,20 @@ async function generateLeaderboardData() {
 
 export async function GET() {
   try {
+    const authSession = await getSession();
+    if (authSession?.role === 'participant') {
+      return NextResponse.json({
+        enabled: false,
+        message: 'LEADERBOARD RESTRICTED: Active operatives are not permitted to access live operational rankings.',
+        leaderboard: [],
+      });
+    }
+
     const now = Date.now();
     if (cachedLeaderboard && now - cachedLeaderboard.timestamp < CACHE_TTL_MS) {
       return NextResponse.json(cachedLeaderboard.data);
     }
 
-    const authSession = await getSession();
     const isAdmin = authSession?.role === 'admin';
 
     // Single-flight deduplication: coalesce simultaneous requests into one execution

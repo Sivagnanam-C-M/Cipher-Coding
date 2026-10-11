@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ShieldCheck, UserPlus, Key, ArrowRight, AlertCircle, Copy, Check } from 'lucide-react';
+import { ShieldCheck, UserPlus, Key, ArrowRight, AlertCircle, Copy, Check, Eye, EyeOff } from 'lucide-react';
 import TerminalCard from '@/components/ui/TerminalCard';
 import CyberButton from '@/components/ui/CyberButton';
 import Badge from '@/components/ui/Badge';
@@ -18,10 +18,13 @@ export default function RegisterPage() {
     confirmPassword: '',
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registeredCode, setRegisteredCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
 
   useEffect(() => {
     fetch('/api/auth/me', { cache: 'no-store' })
@@ -193,33 +196,95 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-slate-300 mb-1 tracking-wider uppercase font-semibold">
-                PASSWORD
-              </label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="••••••••••••"
-                className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
-              />
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-slate-300 tracking-wider uppercase font-semibold">
+                  PASSWORD
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <>
+                      <EyeOff className="w-3.5 h-3.5" />
+                      <span>HIDE</span>
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>VIEW PASSWORD</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  minLength={6}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="••••••••••••"
+                  className="w-full px-3 py-2 pr-10 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors p-1"
+                  title={showPassword ? 'Hide password' : 'View password'}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <div>
-              <label className="block text-slate-300 mb-1 tracking-wider uppercase font-semibold">
-                CONFIRM PASSWORD
-              </label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                placeholder="••••••••••••"
-                className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
-              />
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-slate-300 tracking-wider uppercase font-semibold">
+                  CONFIRM PASSWORD
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="text-[11px] text-cyan-400 hover:text-cyan-300 flex items-center space-x-1 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? (
+                    <>
+                      <EyeOff className="w-3.5 h-3.5" />
+                      <span>HIDE</span>
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>VIEW PASSWORD</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  minLength={6}
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  placeholder="••••••••••••"
+                  className="w-full px-3 py-2 pr-10 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400 transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors p-1"
+                  title={showConfirmPassword ? 'Hide password' : 'View password'}
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <div className="pt-2">

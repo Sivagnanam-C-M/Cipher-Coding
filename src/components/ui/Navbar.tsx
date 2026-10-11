@@ -172,15 +172,17 @@ export function Navbar() {
             <span>Briefing</span>
           </Link>
 
-          <Link
-            href="/leaderboard"
-            className={`flex items-center space-x-1.5 transition-colors ${
-              pathname === '/leaderboard' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Trophy className="w-4 h-4" />
-            <span>Leaderboard</span>
-          </Link>
+          {auth.user?.role !== 'participant' && !pathname.startsWith('/mission') && pathname !== '/login' && (
+            <Link
+              href="/leaderboard"
+              className={`flex items-center space-x-1.5 transition-colors ${
+                pathname === '/leaderboard' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Trophy className="w-4 h-4" />
+              <span>Leaderboard</span>
+            </Link>
+          )}
 
           {auth.user?.role === 'admin' && (
             <Link

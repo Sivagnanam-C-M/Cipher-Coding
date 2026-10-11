@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Shield, Lock, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Shield, Lock, AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import TerminalCard from '@/components/ui/TerminalCard';
 import CyberButton from '@/components/ui/CyberButton';
 import Badge from '@/components/ui/Badge';
@@ -14,8 +14,10 @@ export default function AdminLoginPage() {
     identifier: '',
     password: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
 
   useEffect(() => {
     fetch('/api/auth/me?role=admin', { cache: 'no-store' })
@@ -113,17 +115,48 @@ export default function AdminLoginPage() {
           </div>
 
           <div>
-            <label className="block text-slate-300 mb-1 tracking-wider uppercase font-semibold">
-              SECURITY KEY / PASSWORD
-            </label>
-            <input
-              type="password"
-              required
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              placeholder="••••••••••••"
-              className="w-full px-3 py-2 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-400 transition-colors"
-            />
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-slate-300 tracking-wider uppercase font-semibold">
+                SECURITY KEY / PASSWORD
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-[11px] text-amber-400 hover:text-amber-300 flex items-center space-x-1 transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <>
+                    <EyeOff className="w-3.5 h-3.5" />
+                    <span>HIDE</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>VIEW PASSWORD</span>
+                  </>
+                )}
+              </button>
+            </div>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder="••••••••••••"
+                className="w-full px-3 py-2 pr-10 bg-[#06090e] border border-slate-700 rounded text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-400 transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-400 transition-colors p-1"
+                title={showPassword ? 'Hide password' : 'View password'}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
           <div className="pt-2">

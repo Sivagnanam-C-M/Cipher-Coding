@@ -672,13 +672,6 @@ export default function MissionDashboardPage() {
             The challenge has ended with your current score of{' '}
             <strong className="text-amber-400">{missionData?.score || 0} PTS</strong> and elapsed time.
           </p>
-          <div className="flex items-center justify-center gap-3 pt-2">
-            <Link href="/leaderboard">
-              <CyberButton variant="cyan" size="sm">
-                VIEW LEADERBOARD RANKINGS
-              </CyberButton>
-            </Link>
-          </div>
         </div>
       )}
 
@@ -694,13 +687,6 @@ export default function MissionDashboardPage() {
             <strong className="text-emerald-400">{missionData?.score || 0} PTS</strong> has been recorded.
             Submissions are now disabled.
           </p>
-          <div className="pt-2">
-            <Link href="/leaderboard">
-              <CyberButton variant="cyan" size="sm">
-                VIEW FINAL RANKINGS
-              </CyberButton>
-            </Link>
-          </div>
         </div>
       )}
 
