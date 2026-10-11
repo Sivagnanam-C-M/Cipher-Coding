@@ -45,6 +45,7 @@ export async function middleware(req: NextRequest) {
   const isLoginRoute = pathname === '/login';
   const isAdminLoginRoute = pathname === '/admin/login';
   const isRegisterRoute = pathname === '/register';
+  const isLeaderboardRoute = pathname === '/leaderboard';
   const isMissionRoute = pathname.startsWith('/mission');
   const isAdminRoute = pathname.startsWith('/admin') && !isAdminLoginRoute;
 
@@ -93,6 +94,15 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // 5. Protect Leaderboard route (Strictly Admin Only)
+  if (isLeaderboardRoute) {
+    const role = await getAuthenticatedRole(req);
+    if (role !== 'admin') {
+      return NextResponse.redirect(new URL('/admin/login', req.url));
+    }
+    return NextResponse.next();
+  }
+
   return NextResponse.next();
 }
 
@@ -101,6 +111,7 @@ export const config = {
     '/',
     '/mission/:path*',
     '/admin/:path*',
+    '/leaderboard',
     '/login',
     '/admin/login',
     '/register',

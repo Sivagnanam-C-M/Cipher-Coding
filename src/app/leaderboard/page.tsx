@@ -32,6 +32,10 @@ export default function LeaderboardPage() {
     if (isManual) setRefreshing(true);
     try {
       const res = await fetch('/api/leaderboard');
+      if (res.status === 401 || res.status === 403) {
+        router.replace('/admin/login');
+        return;
+      }
       const data = await res.json();
       if (res.ok) {
         setEnabled(data.enabled !== false);
@@ -47,14 +51,16 @@ export default function LeaderboardPage() {
   };
 
   useEffect(() => {
-    fetch('/api/auth/me', { cache: 'no-store' })
+    fetch('/api/auth/me?role=admin', { cache: 'no-store' })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data?.authenticated && data?.user?.role === 'participant') {
-          router.replace('/mission');
+        if (!data?.authenticated || data?.user?.role !== 'admin') {
+          router.replace('/admin/login');
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        router.replace('/admin/login');
+      });
   }, [router]);
 
   useEffect(() => {
@@ -91,10 +97,13 @@ export default function LeaderboardPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
-            <Trophy className="w-6 h-6 text-amber-400" />
-            LIVE LEADERBOARD
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+              <Trophy className="w-6 h-6 text-amber-400" />
+              LIVE LEADERBOARD
+            </h1>
+            <Badge variant="amber">ADMIN ACCESS ONLY</Badge>
+          </div>
           <p className="text-xs text-slate-400 mt-0.5">
             Ranked by total score, then lowest elapsed deciphering time.
           </p>

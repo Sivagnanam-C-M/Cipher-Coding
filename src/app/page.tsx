@@ -186,16 +186,12 @@ export default function AccessGatewayPage() {
           </Link>
         </div>
 
-        {/* Command Tower & Leaderboard Links */}
+        {/* Command Tower & Briefing Links */}
         <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800/80 text-xs text-slate-500">
           <div className="flex items-center space-x-4">
-            <Link href="/leaderboard" className="flex items-center space-x-1.5 hover:text-cyan-400 transition-colors">
-              <Trophy className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Public Live Leaderboard</span>
-            </Link>
-            <span className="text-slate-700">•</span>
-            <Link href="/briefing" className="hover:text-slate-300 transition-colors">
-              Rules of Engagement
+            <Link href="/briefing" className="hover:text-slate-300 transition-colors flex items-center space-x-1.5">
+              <FileText className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Rules of Engagement</span>
             </Link>
           </div>
 

@@ -105,24 +105,28 @@ async function generateLeaderboardData() {
 export async function GET() {
   try {
     const authSession = await getSession();
-    if (authSession?.role === 'participant') {
-      return NextResponse.json({
-        enabled: false,
-        message: 'LEADERBOARD RESTRICTED: Active operatives are not permitted to access live operational rankings.',
-        leaderboard: [],
-      });
+    if (authSession?.role !== 'admin') {
+      return NextResponse.json(
+        {
+          error: 'LEADERBOARD RESTRICTED: Live operational standings are strictly classified for administrator access only.',
+          enabled: false,
+          leaderboard: [],
+        },
+        {
+          status: 403,
+          headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+        }
+      );
     }
 
-    const CACHE_HEADERS = {
-      'Cache-Control': 'public, s-maxage=2, stale-while-revalidate=5',
+    const NO_CACHE_HEADERS = {
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
     };
 
     const now = Date.now();
     if (cachedLeaderboard && now - cachedLeaderboard.timestamp < CACHE_TTL_MS) {
-      return NextResponse.json(cachedLeaderboard.data, { headers: CACHE_HEADERS });
+      return NextResponse.json(cachedLeaderboard.data, { headers: NO_CACHE_HEADERS });
     }
-
-    const isAdmin = authSession?.role === 'admin';
 
     // Single-flight deduplication: coalesce simultaneous requests into one execution
     if (!inFlightLeaderboardPromise) {
@@ -147,15 +151,7 @@ export async function GET() {
       return NextResponse.json({ error: payload.error }, { status: payload.status || 500 });
     }
 
-    if (!payload.leaderboardEnabled && !isAdmin) {
-      return NextResponse.json({
-        enabled: false,
-        message: 'LEADERBOARD CLASSIFIED: Live operational standings are currently restricted.',
-        leaderboard: [],
-      }, { headers: CACHE_HEADERS });
-    }
-
-    return NextResponse.json(payload, { headers: CACHE_HEADERS });
+    return NextResponse.json(payload, { headers: NO_CACHE_HEADERS });
   } catch (error: any) {
     console.error('[API /api/leaderboard] Error:', error);
     return NextResponse.json(

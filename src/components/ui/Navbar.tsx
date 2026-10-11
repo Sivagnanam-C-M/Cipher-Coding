@@ -172,7 +172,7 @@ export function Navbar() {
             <span>Briefing</span>
           </Link>
 
-          {auth.user?.role !== 'participant' && !pathname.startsWith('/mission') && pathname !== '/login' && (
+          {auth.user?.role === 'admin' && (
             <Link
               href="/leaderboard"
               className={`flex items-center space-x-1.5 transition-colors ${
