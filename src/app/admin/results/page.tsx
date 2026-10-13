@@ -41,6 +41,10 @@ export default function AdminResultsPage() {
     fetchResults();
   }, []);
 
+  const handleDownloadExcel = () => {
+    window.location.href = '/api/admin/results?format=xlsx';
+  };
+
   const handleExportCsv = () => {
     window.location.href = '/api/admin/results?format=csv';
   };
@@ -72,7 +76,16 @@ export default function AdminResultsPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <CyberButton
+            variant="emerald"
+            size="md"
+            onClick={handleDownloadExcel}
+            icon={<FileSpreadsheet className="w-4 h-4" />}
+          >
+            DOWNLOAD EXCEL (.XLSX)
+          </CyberButton>
+
           <Link href="/admin/results/scoresheet?print=true">
             <CyberButton
               variant="amber"
@@ -103,7 +116,7 @@ export default function AdminResultsPage() {
         </div>
       </div>
 
-      {/* Results Table strictly with Position, Name, College, Mark, Time Taken */}
+      {/* Results Table strictly with Position, Name, College, Mark, Time */}
       <TerminalCard glowColor="amber">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
@@ -113,7 +126,7 @@ export default function AdminResultsPage() {
                 <th className="py-3 px-4">NAME</th>
                 <th className="py-3 px-4">COLLEGE</th>
                 <th className="py-3 px-4 text-center w-28">MARK</th>
-                <th className="py-3 px-4 text-right w-36">TIME TAKEN</th>
+                <th className="py-3 px-4 text-right w-36">TIME</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60 font-mono">

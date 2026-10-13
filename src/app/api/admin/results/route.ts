@@ -8,6 +8,7 @@ import Participant from '@/models/Participant';
 import EventSession from '@/models/EventSession';
 import ParticipantProgress from '@/models/ParticipantProgress';
 import { formatTimeDisplay } from '@/lib/timer';
+import { generateExcelScoreSheet } from '@/lib/excelScoreSheet';
 
 function getLogoDataUri(filename: string): string {
   try {
@@ -116,22 +117,44 @@ export async function GET(req: NextRequest) {
       ...r,
     }));
 
-    // CSV format strictly containing: Position, Name, College, Mark, Time Taken
+    // EXCEL (.XLSX) format filled directly into the uploaded template
+    if (format === 'xlsx' || format === 'excel') {
+      const excelBuffer = await generateExcelScoreSheet(ranked);
+      return new NextResponse(new Uint8Array(excelBuffer), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': 'attachment; filename="Cybersentinel_2K26_Score_Sheet.xlsx"',
+        },
+      });
+    }
+
+    // CSV format strictly matching the uploaded template structure
     if (format === 'csv') {
-      const header = 'Position,Name,College,Mark,Time Taken\n';
-      const csvLines = ranked.map((r) => {
+      const titleLines = [
+        ',Cybersentinel 2K26 - WEBLICA,,,',
+        ',Score Sheet,,,',
+        ',Participant Ranking & Performance Record,,,',
+        ',,,,',
+        'POSITION,NAME,COLLEGE,MARK,TIME',
+      ];
+      const dataLines = ranked.map((r) => {
         const safeName = `"${(r.name || '').replace(/"/g, '""')}"`;
         const safeCollege = `"${(r.college || '').replace(/"/g, '""')}"`;
         return `${r.rank},${safeName},${safeCollege},${r.score},"${r.completionTime}"`;
       });
+      const footerLines = [
+        ',,,,',
+        "Evaluator's Signature: ____________________________________________,,,,",
+      ];
 
-      const csvContent = header + csvLines.join('\n');
+      const csvContent = [...titleLines, ...dataLines, ...footerLines].join('\n');
 
       return new NextResponse(csvContent, {
         status: 200,
         headers: {
           'Content-Type': 'text/csv; charset=utf-8',
-          'Content-Disposition': 'attachment; filename="cybersentinel_2k26_results.csv"',
+          'Content-Disposition': 'attachment; filename="Cybersentinel_2K26_Score_Sheet.csv"',
         },
       });
     }
@@ -220,6 +243,13 @@ export async function GET(req: NextRequest) {
       border: none;
       transition: all 0.15s ease;
     }
+    .btn-excel {
+      background: #10b981;
+      color: #ffffff;
+    }
+    .btn-excel:hover {
+      background: #059669;
+    }
     .btn-print {
       background: #f59e0b;
       color: #000000;
@@ -263,7 +293,7 @@ export async function GET(req: NextRequest) {
       font-size: 19px;
       font-weight: 700;
       letter-spacing: 0.5px;
-      margin: 0 0 6px 0;
+      margin: 0 0 4px 0;
       font-family: 'Times New Roman', Times, Georgia, serif;
       text-transform: uppercase;
       color: #111827;
@@ -276,10 +306,18 @@ export async function GET(req: NextRequest) {
       font-family: 'Times New Roman', Times, Georgia, serif;
       color: #000000;
     }
+    .sheet-subtitle {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin: 4px 0 0 0;
+      font-family: Arial, sans-serif;
+      color: #4b5563;
+    }
     .results-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 14px;
       font-size: 13.5px;
     }
     .results-table th, .results-table td {
@@ -321,6 +359,13 @@ export async function GET(req: NextRequest) {
       font-family: monospace;
       font-weight: 600;
     }
+    .evaluator-signature {
+      margin-top: 36px;
+      padding-top: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
     @media print {
       body {
         background: #ffffff;
@@ -347,6 +392,7 @@ export async function GET(req: NextRequest) {
       CYBERSENTINEL 2K26 // SCORE SHEET DOCUMENT
     </div>
     <div class="btn-group">
+      <a class="btn btn-excel" href="/api/admin/results?format=xlsx">📊 Download Excel (.xlsx)</a>
       <button class="btn btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
       <a class="btn btn-download" href="/api/admin/results?format=csv">📥 Download CSV</a>
     </div>
@@ -358,6 +404,7 @@ export async function GET(req: NextRequest) {
       <div class="header-center">
         <div class="event-title">Cybersentinel 2K26 - WEBLICA</div>
         <div class="sheet-title">Score Sheet</div>
+        <div class="sheet-subtitle">Participant Ranking & Performance Record</div>
       </div>
       <img src="${cybersentinelLogo}" alt="CyberSentinel 2K26" class="header-logo-right" />
     </div>
@@ -369,13 +416,17 @@ export async function GET(req: NextRequest) {
           <th class="col-name">Name</th>
           <th class="col-college">College</th>
           <th class="col-mark">Mark</th>
-          <th class="col-time">Time Taken</th>
+          <th class="col-time">Time</th>
         </tr>
       </thead>
       <tbody>
         ${tableRowsHtml}
       </tbody>
     </table>
+
+    <div class="evaluator-signature">
+      Evaluator's Signature: ____________________________________________
+    </div>
   </div>
 </body>
 </html>`;

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Printer, Download, ArrowLeft, RotateCw } from 'lucide-react';
+import { Printer, Download, ArrowLeft, RotateCw, FileSpreadsheet } from 'lucide-react';
 
 interface ResultRow {
   rank: number;
@@ -69,9 +69,17 @@ export default function ScoreSheetPage() {
         </Link>
 
         <div className="flex flex-wrap items-center gap-2">
+          <a
+            href="/api/admin/results?format=xlsx"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold rounded shadow transition-all active:scale-95"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            <span>DOWNLOAD EXCEL (.XLSX)</span>
+          </a>
+
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-mono text-xs font-bold rounded shadow transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-mono text-xs font-bold rounded shadow transition-all active:scale-95"
           >
             <Printer className="w-4 h-4" />
             <span>PRINT / SAVE AS PDF</span>
@@ -115,6 +123,9 @@ export default function ScoreSheetPage() {
             <h1 className="text-2xl md:text-3xl font-extrabold font-serif tracking-wider text-black mt-1 m-0">
               Score Sheet
             </h1>
+            <p className="text-xs font-medium text-slate-600 mt-1 m-0 tracking-wide uppercase">
+              Participant Ranking & Performance Record
+            </p>
           </div>
 
           <div className="w-[100px] flex items-center justify-end">
@@ -127,7 +138,7 @@ export default function ScoreSheetPage() {
           </div>
         </div>
 
-        {/* Results Table strictly with Position, Name, College, Mark, Time Taken */}
+        {/* Results Table strictly with Position, Name, College, Mark, Time */}
         <table className="w-full border-collapse border-[1.5px] border-black text-xs md:text-sm">
           <thead>
             <tr className="bg-slate-100 border-b-[1.5px] border-black">
@@ -144,7 +155,7 @@ export default function ScoreSheetPage() {
                 Mark
               </th>
               <th className="border-[1.5px] border-black px-3 py-2.5 text-center font-bold uppercase w-[120px]">
-                Time Taken
+                Time
               </th>
             </tr>
           </thead>
@@ -181,6 +192,11 @@ export default function ScoreSheetPage() {
             )}
           </tbody>
         </table>
+
+        {/* Evaluator's Signature */}
+        <div className="mt-12 text-sm font-bold text-black">
+          Evaluator&apos;s Signature: ____________________________________________
+        </div>
       </div>
     </div>
   );
