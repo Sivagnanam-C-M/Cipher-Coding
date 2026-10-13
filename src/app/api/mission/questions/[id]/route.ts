@@ -139,7 +139,7 @@ export async function GET(
         title: question.title,
         section: question.section,
         storyText: question.storyText,
-        storyReveal: question.storyReveal || '',
+        storyReveal: isSolved ? (question.storyReveal || '') : '',
         nextQuestionId: nextQuestion?._id || null,
         nextQuestionNumber: nextQuestion?.questionNumber || null,
         codeBlock: resolvedCodeBlock,

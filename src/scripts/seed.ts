@@ -103,6 +103,7 @@ async function seed() {
   console.log(`[Seed] Safely synced ${seededCount} questions without deleting existing data.`);
 
   console.log('[Seed] Database initialization complete.');
+  process.exit(0);
 }
 
 seed().catch((err) => {

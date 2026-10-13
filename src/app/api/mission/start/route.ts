@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
         title: firstQ.title,
         section: firstQ.section,
         storyText: firstQ.storyText,
-        storyReveal: firstQ.storyReveal || '',
+        storyReveal: (p0?.status === 'solved') ? (firstQ.storyReveal || '') : '',
         nextQuestionId: nextQ?._id?.toString() || null,
         nextQuestionNumber: nextQ?.questionNumber || null,
         codeBlock: codeBlocks[userLang as keyof typeof codeBlocks] || firstQ.codeBlock || '',
