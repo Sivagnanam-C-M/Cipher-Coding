@@ -205,27 +205,18 @@ export function ProctorProvider({ children }: { children: React.ReactNode }) {
     };
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
+      // Strictly trigger only when the page is genuinely hidden (tab switch or minimization)
+      // Ignores OS/browser notifications which only cause transient focus loss (blur) without hiding the document
+      if (document.visibilityState === 'hidden' && !isNavigating) {
         recordTabSwitch();
       }
     };
 
-    const handleWindowBlur = () => {
-      // Ignore during page unload/navigation or if document still holds internal focus
-      if (isNavigating) return;
-      if (typeof document !== 'undefined' && document.hasFocus && document.hasFocus()) {
-        return;
-      }
-      recordTabSwitch();
-    };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleWindowBlur);
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleWindowBlur);
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [sessionStatus, isTerminated, recordTabSwitch]);

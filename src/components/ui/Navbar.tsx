@@ -119,7 +119,7 @@ export function Navbar() {
   const isAdmin = pathname.startsWith('/admin');
 
   return (
-    <nav className="sticky top-0 z-40 bg-[#080c14]/90 backdrop-blur-md border-b border-slate-800 font-mono text-sm">
+    <nav className="sticky top-0 z-40 bg-[#080c14]/90 backdrop-blur-md border-b border-slate-800 font-mono text-sm print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand */}
         <Link

@@ -32,9 +32,9 @@ export default function AdminLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-[#080c14] font-mono">
+    <div className="min-h-screen bg-[#080c14] font-mono print:bg-white print:min-h-0">
       {/* Admin Subheader Navigation Bar */}
-      <div className="bg-[#0b101c] border-b border-slate-800">
+      <div className="bg-[#0b101c] border-b border-slate-800 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-12">
             <div className="flex items-center space-x-2 text-xs font-bold text-amber-400">
@@ -66,7 +66,7 @@ export default function AdminLayout({
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0 print:m-0 print:max-w-full">{children}</main>
     </div>
   );
 }
