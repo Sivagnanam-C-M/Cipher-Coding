@@ -287,3 +287,46 @@ export async function PUT(
 ) {
   return handleUpdateParticipant(req, context);
 }
+
+export async function DELETE(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const authSession = await getAdminSession();
+    if (!authSession || authSession.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized: Admin clearance required' }, { status: 403 });
+    }
+
+    const { id } = await context.params;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json({ error: 'Invalid participant ID' }, { status: 400 });
+    }
+
+    await connectToDatabase();
+    const participant = await Participant.findById(id);
+    if (!participant) {
+      return NextResponse.json({ error: 'Participant not found' }, { status: 404 });
+    }
+
+    const participantId = participant._id;
+    const participantCode = participant.participantCode;
+    const participantName = participant.name;
+
+    // Concurrently delete participant and all related records across collections
+    await Promise.all([
+      Participant.findByIdAndDelete(participantId),
+      EventSession.deleteMany({ participantId }),
+      ParticipantProgress.deleteMany({ participantId }),
+      Submission.deleteMany({ participantId }),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      message: `Operative ${participantCode} (${participantName}) has been permanently deleted.`,
+    });
+  } catch (error: any) {
+    console.error('[API DELETE /api/admin/participants/[id]] Error:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to delete participant' }, { status: 500 });
+  }
+}

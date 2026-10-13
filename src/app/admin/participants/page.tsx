@@ -21,6 +21,7 @@ import {
   Save,
   Eye,
   EyeOff,
+  Trash2,
 } from 'lucide-react';
 import TerminalCard from '@/components/ui/TerminalCard';
 import CyberButton from '@/components/ui/CyberButton';
@@ -82,6 +83,14 @@ export default function AdminParticipantsPage() {
 
   // Quick action loading on table row
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+  // Single agent delete modal
+  const [deleteTarget, setDeleteTarget] = useState<ParticipantRecord | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Bulk delete all agents modal
+  const [deleteAllModalOpen, setDeleteAllModalOpen] = useState(false);
+  const [deleteAllLoading, setDeleteAllLoading] = useState(false);
 
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -224,6 +233,55 @@ export default function AdminParticipantsPage() {
     }
   };
 
+  // Delete single agent permanently
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/participants/${deleteTarget.id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSuccessMessage(data.message || `Operative ${deleteTarget.participantCode} permanently deleted.`);
+        setDeleteTarget(null);
+        await fetchParticipants();
+      } else {
+        setError(data.error || 'Failed to delete operative');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Network error deleting operative');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  // Purge / Delete all agents permanently
+  const handleConfirmDeleteAll = async () => {
+    setDeleteAllLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/participants', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete_all' }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSuccessMessage(data.message || 'All operatives permanently deleted.');
+        setDeleteAllModalOpen(false);
+        await fetchParticipants();
+      } else {
+        setError(data.error || 'Failed to purge operatives');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Network error purging operatives');
+    } finally {
+      setDeleteAllLoading(false);
+    }
+  };
+
   // 3. Quick reduce 1 tab switch from row
   const handleReduceOneSwitch = async (p: ParticipantRecord) => {
     setActionLoadingId(p.id);
@@ -324,12 +382,20 @@ export default function AdminParticipantsPage() {
             REFRESH
           </CyberButton>
           <CyberButton
-            variant="crimson"
+            variant="amber"
             size="sm"
             onClick={() => setResetModalOpen(true)}
             icon={<RotateCcw className="w-3.5 h-3.5" />}
           >
             SET ALL TO NOT ATTENDED
+          </CyberButton>
+          <CyberButton
+            variant="crimson"
+            size="sm"
+            onClick={() => setDeleteAllModalOpen(true)}
+            icon={<Trash2 className="w-3.5 h-3.5" />}
+          >
+            DELETE ALL AGENTS
           </CyberButton>
           <span className="text-xs text-slate-400 font-mono">
             TOTAL AGENTS: <strong className="text-cyan-400">{participants.length}</strong>
@@ -507,13 +573,22 @@ export default function AdminParticipantsPage() {
                             SWITCHES
                           </CyberButton>
                           <CyberButton
-                            variant="crimson"
+                            variant="secondary"
                             size="xs"
                             className="h-6 px-2 py-0 text-[10px] font-bold tracking-wider leading-none"
                             onClick={() => setIndividualResetTarget(p)}
                             icon={<RotateCcw className="w-2.5 h-2.5" />}
                           >
                             RESET
+                          </CyberButton>
+                          <CyberButton
+                            variant="crimson"
+                            size="xs"
+                            className="h-6 px-2 py-0 text-[10px] font-bold tracking-wider leading-none"
+                            onClick={() => setDeleteTarget(p)}
+                            icon={<Trash2 className="w-2.5 h-2.5" />}
+                          >
+                            DELETE
                           </CyberButton>
                         </div>
                       </td>
@@ -548,6 +623,30 @@ export default function AdminParticipantsPage() {
         confirmVariant="crimson"
         isLoading={individualResetLoading}
         onConfirm={handleConfirmIndividualReset}
+      />
+
+      {/* Modal: Confirmation Modal for Individual Agent Deletion */}
+      <Modal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        title={`PERMANENTLY DELETE AGENT: ${deleteTarget?.participantCode}`}
+        description={`Are you sure you want to permanently delete operative ${deleteTarget?.name} (${deleteTarget?.participantCode})? This action CANNOT be undone. Their user account, scores, submissions, progress, and mission logs will be completely removed from the database.`}
+        confirmLabel="PERMANENTLY DELETE AGENT"
+        confirmVariant="crimson"
+        isLoading={deleteLoading}
+        onConfirm={handleConfirmDelete}
+      />
+
+      {/* Modal: Confirmation Modal for Purging All Agents */}
+      <Modal
+        isOpen={deleteAllModalOpen}
+        onClose={() => setDeleteAllModalOpen(false)}
+        title="PURGE ALL REGISTERED AGENTS"
+        description={`WARNING: Are you sure you want to permanently delete ALL ${participants.length} registered operative(s)? This will wipe every agent profile, login credential, score, session, and question submission from the database. This action CANNOT be undone.`}
+        confirmLabel="CONFIRM PURGE ALL AGENTS"
+        confirmVariant="crimson"
+        isLoading={deleteAllLoading}
+        onConfirm={handleConfirmDeleteAll}
       />
 
       {/* Modal 2: Manage / Reduce Tab Switches Modal */}
@@ -853,25 +952,40 @@ export default function AdminParticipantsPage() {
               </div>
 
               {/* Modal Footer */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-800">
                 <CyberButton
                   type="button"
-                  variant="secondary"
+                  variant="crimson"
                   size="sm"
-                  onClick={() => setEditTarget(null)}
-                  disabled={editLoading}
+                  onClick={() => {
+                    const target = editTarget;
+                    setEditTarget(null);
+                    setDeleteTarget(target);
+                  }}
+                  icon={<Trash2 className="w-3.5 h-3.5" />}
                 >
-                  CANCEL
+                  DELETE AGENT
                 </CyberButton>
-                <CyberButton
-                  type="submit"
-                  variant="cyan"
-                  size="sm"
-                  isLoading={editLoading}
-                  icon={<Save className="w-3.5 h-3.5" />}
-                >
-                  SAVE CHANGES
-                </CyberButton>
+                <div className="flex items-center gap-3">
+                  <CyberButton
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setEditTarget(null)}
+                    disabled={editLoading}
+                  >
+                    CANCEL
+                  </CyberButton>
+                  <CyberButton
+                    type="submit"
+                    variant="cyan"
+                    size="sm"
+                    isLoading={editLoading}
+                    icon={<Save className="w-3.5 h-3.5" />}
+                  >
+                    SAVE CHANGES
+                  </CyberButton>
+                </div>
               </div>
             </form>
           </div>

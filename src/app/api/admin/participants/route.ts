@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import { getAdminSession } from '@/lib/auth/session';
 import connectToDatabase from '@/lib/mongodb';
 import Event from '@/models/Event';
 import Participant from '@/models/Participant';
 import EventSession from '@/models/EventSession';
 import ParticipantProgress from '@/models/ParticipantProgress';
+import Submission from '@/models/Submission';
 
 export async function GET(req: NextRequest) {
   try {
@@ -103,5 +105,54 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error('[API GET /api/admin/participants] Error:', error);
     return NextResponse.json({ error: 'Failed to retrieve participants' }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const authSession = await getAdminSession();
+    if (!authSession || authSession.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized: Admin clearance required' }, { status: 403 });
+    }
+
+    const body = await req.json().catch(() => ({}));
+    const { action, ids } = body;
+
+    await connectToDatabase();
+
+    if (action === 'delete_all') {
+      const deleteCount = await Participant.countDocuments({});
+      await Promise.all([
+        Participant.deleteMany({}),
+        EventSession.deleteMany({}),
+        ParticipantProgress.deleteMany({}),
+        Submission.deleteMany({}),
+      ]);
+
+      return NextResponse.json({
+        success: true,
+        message: `Successfully purged all ${deleteCount} operative(s) and their associated records.`,
+      });
+    }
+
+    if (Array.isArray(ids) && ids.length > 0) {
+      const validObjectIds = ids.filter((id: string) => mongoose.Types.ObjectId.isValid(id));
+      await Promise.all([
+        Participant.deleteMany({ _id: { $in: validObjectIds } }),
+        EventSession.deleteMany({ participantId: { $in: validObjectIds } }),
+        ParticipantProgress.deleteMany({ participantId: { $in: validObjectIds } }),
+        Submission.deleteMany({ participantId: { $in: validObjectIds } }),
+      ]);
+
+      return NextResponse.json({
+        success: true,
+        message: `Successfully deleted ${validObjectIds.length} operative(s).`,
+      });
+    }
+
+    return NextResponse.json({ error: 'Invalid delete request payload' }, { status: 400 });
+  } catch (error: any) {
+    console.error('[API DELETE /api/admin/participants] Error:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to delete participants' }, { status: 500 });
   }
 }
