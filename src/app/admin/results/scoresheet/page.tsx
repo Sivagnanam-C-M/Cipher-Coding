@@ -118,7 +118,7 @@ export default function ScoreSheetPage() {
 
           <div className="flex-1 text-center px-2">
             <h2 className="text-lg md:text-xl font-bold font-serif uppercase tracking-wide text-neutral-900 m-0">
-              Cybersentinel 2K26 - WEBLICA
+              Cybersentinel 2K26 - CIPHER CODING
             </h2>
             <h1 className="text-2xl md:text-3xl font-extrabold font-serif tracking-wider text-black mt-1 m-0">
               Score Sheet

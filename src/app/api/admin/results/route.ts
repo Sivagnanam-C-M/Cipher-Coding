@@ -132,7 +132,7 @@ export async function GET(req: NextRequest) {
     // CSV format strictly matching the uploaded template structure
     if (format === 'csv') {
       const titleLines = [
-        ',Cybersentinel 2K26 - WEBLICA,,,',
+        ',      Cybersentinel 2K26 - CIPHER CODING,,,',
         ',Score Sheet,,,',
         ',Participant Ranking & Performance Record,,,',
         ',,,,',
@@ -185,7 +185,7 @@ export async function GET(req: NextRequest) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cybersentinel 2K26 - WEBLICA Score Sheet</title>
+  <title>Cybersentinel 2K26 - CIPHER CODING Score Sheet</title>
   <style>
     @page {
       size: A4 portrait;
@@ -402,7 +402,7 @@ export async function GET(req: NextRequest) {
     <div class="header">
       <img src="${veltechLogo}" alt="Vel Tech High Tech" class="header-logo-left" />
       <div class="header-center">
-        <div class="event-title">Cybersentinel 2K26 - WEBLICA</div>
+        <div class="event-title">Cybersentinel 2K26 - CIPHER CODING</div>
         <div class="sheet-title">Score Sheet</div>
         <div class="sheet-subtitle">Participant Ranking & Performance Record</div>
       </div>

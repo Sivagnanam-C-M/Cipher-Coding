@@ -31,18 +31,35 @@ export async function generateExcelScoreSheet(rows: ScoreSheetRow[]): Promise<Bu
   const templateBuffer = fs.readFileSync(templatePath);
   const zip = await JSZip.loadAsync(templateBuffer);
 
+  // Ensure Evaluator's Signature is registered in sharedStrings.xml if needed
+  const ssFile = zip.file('xl/sharedStrings.xml');
+  if (ssFile) {
+    let ssXml = await ssFile.async('text');
+    if (!ssXml.includes("Evaluator's Signature")) {
+      ssXml = ssXml.replace(
+        '</sst>',
+        '<si><t>Evaluator\'s Signature: ____________________________________________</t></si></sst>'
+      );
+      ssXml = ssXml.replace(
+        /count="(\d+)" uniqueCount="(\d+)"/,
+        (_match, c, u) => `count="${Number(c) + 1}" uniqueCount="${Number(u) + 1}"`
+      );
+      zip.file('xl/sharedStrings.xml', ssXml);
+    }
+  }
+
   const totalDataRows = Math.max(10, rows.length);
   const startRow = 6;
   const lastDataRow = startRow + totalDataRows - 1;
   const sigRow = lastDataRow + 2;
 
   let rowsXml = '';
-  // Top header rows (1-5) preserving exact styling and logos
-  rowsXml += '<row r="1" spans="1:5" ht="42" customHeight="1" x14ac:dyDescent="0.25"><c r="B1" s="6" t="s"><v>0</v></c><c r="C1" s="7"/><c r="D1" s="7"/></row>';
-  rowsXml += '<row r="2" spans="1:5" ht="30" customHeight="1" x14ac:dyDescent="0.25"><c r="B2" s="8" t="s"><v>1</v></c><c r="C2" s="7"/><c r="D2" s="7"/></row>';
-  rowsXml += '<row r="3" spans="1:5" ht="24" customHeight="1" x14ac:dyDescent="0.25"><c r="B3" s="10" t="s"><v>2</v></c><c r="C3" s="7"/><c r="D3" s="7"/></row>';
+  // Top header rows (1-5) matching new Cybersentinel 2K26 - CIPHER CODING template
+  rowsXml += '<row r="1" spans="1:5" ht="42" customHeight="1" x14ac:dyDescent="0.25"><c r="B1" s="6" t="s"><v>7</v></c><c r="C1" s="7"/><c r="D1" s="7"/></row>';
+  rowsXml += '<row r="2" spans="1:5" ht="30" customHeight="1" x14ac:dyDescent="0.25"><c r="B2" s="8" t="s"><v>0</v></c><c r="C2" s="7"/><c r="D2" s="7"/></row>';
+  rowsXml += '<row r="3" spans="1:5" ht="24" customHeight="1" x14ac:dyDescent="0.25"><c r="B3" s="9" t="s"><v>1</v></c><c r="C3" s="7"/><c r="D3" s="7"/></row>';
   rowsXml += '<row r="4" spans="1:5" ht="12" customHeight="1" x14ac:dyDescent="0.25"/>';
-  rowsXml += '<row r="5" spans="1:5" ht="27.95" customHeight="1" x14ac:dyDescent="0.25"><c r="A5" s="1" t="s"><v>3</v></c><c r="B5" s="1" t="s"><v>4</v></c><c r="C5" s="1" t="s"><v>5</v></c><c r="D5" s="1" t="s"><v>6</v></c><c r="E5" s="1" t="s"><v>7</v></c></row>';
+  rowsXml += '<row r="5" spans="1:5" ht="27.95" customHeight="1" x14ac:dyDescent="0.25"><c r="A5" s="1" t="s"><v>2</v></c><c r="B5" s="1" t="s"><v>3</v></c><c r="C5" s="1" t="s"><v>4</v></c><c r="D5" s="1" t="s"><v>5</v></c><c r="E5" s="1" t="s"><v>6</v></c></row>';
 
   // Populate participant rows with alternating styles
   for (let i = 0; i < totalDataRows; i++) {
